@@ -67,7 +67,7 @@ const Sidebar = () => {
     {
       key: "/",
       icon: renderIcon(Dashboard, "/"),
-      label: <Link to="/">Overview</Link>,
+      label: <Link to="/">Dashboard Overview</Link>,
     },
     {
       key: "/orderManagement",
@@ -90,6 +90,11 @@ const Sidebar = () => {
       label: <Link to="/inventory">Inventory Management</Link>,
     },
     {
+      key: "/subscription",
+      icon: renderIcon(InventoryManagement, "/subscription"),
+      label: <Link to="/subscription">Subscription Package</Link>,
+    },
+    {
       key: "/loyaltyProgram",
       icon: renderIcon(LoyaltyProgram, "/loyaltyProgram"),
       label: <Link to="/loyaltyProgram">Loyalty Program</Link>,
@@ -98,6 +103,21 @@ const Sidebar = () => {
       key: "/subsciption",
       icon: renderIcon(SubscriptionManagement, "/subsciption"),
       label: <Link to="/subsciption">Subscription Management</Link>,
+    },
+    {
+      key: "/category",
+      icon: renderIcon(SubscriptionManagement, "/category"),
+      label: <Link to="/category">Category Management</Link>,
+    },
+    {
+      key: "/products",
+      icon: renderIcon(SubscriptionManagement, "/products"),
+      label: <Link to="/products">Products Management</Link>,
+    },
+    {
+      key: "/user",
+      icon: renderIcon(SubscriptionManagement, "/user"),
+      label: <Link to="/user">User Management</Link>,
     },
     {
       key: "subMenuSetting",
@@ -115,6 +135,10 @@ const Sidebar = () => {
         {
           key: "/privacy-policy",
           label: <Link to="/privacy-policy">Privacy Policy</Link>,
+        },
+        {
+          key: "/faq",
+          label: <Link to="/faq">FAQ </Link>,
         },
       ],
     },
@@ -157,7 +181,7 @@ const Sidebar = () => {
         to={"/"}
         className="flex items-center justify-center py-4 border-b-2 border-primary"
       >
-        <img src={image4} alt="logo" className="w-28 h-28" />
+        <img src={image4} alt="logo" className="w-40 h-32" />
       </Link>
       <Menu
         mode="inline"

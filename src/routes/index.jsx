@@ -29,6 +29,12 @@ import Products from "../Pages/Dashboard/Products";
 import LoyaltyProgram from "../Pages/Dashboard/LoyaltyProgram";
 import SubscriptionTable from "../components/subscriber/SubscriberTable";
 import OrderManagementContainer from "../components/orderMangement/OrderManagementContainer";
+import CategoryManagement from "../components/category/CategoryManagement";
+import UserManagement from "../components/userMangement/UserManagement";
+import ProductManagement from "../components/productManagement/ProductsManagement";
+import FAQSection from "../components/faq/Faq";
+import SubscriptionPackagePage from "../Pages/Dashboard/Subscription";
+import PackagesPlans from "../Pages/Dashboard/Subscription";
 // import SalesRepsManagementTable from "../components/SalesRepsManagement/SalesRepsManagement";
 
 const router = createBrowserRouter([
@@ -75,11 +81,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/category",
-        element: <Category />,
+        element: <CategoryManagement />,
       },
       {
-        path: "/events",
-        element: <Events />,
+        path: "/products",
+        element: <ProductManagement />,
+      },
+      {
+        path: "/user",
+        element: <UserManagement />,
+      },
+      {
+        path: "/subscription",
+        element: <PackagesPlans />,
       },
       {
         path: "/banner",
@@ -100,6 +114,10 @@ const router = createBrowserRouter([
       {
         path: "/change-password",
         element: <ChangePassword />,
+      },
+      {
+        path: "/faq",
+        element: <FAQSection />,
       },
       {
         path: "/sub-category",
