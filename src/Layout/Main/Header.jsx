@@ -47,7 +47,8 @@ const Header = () => {
   );
 
   return (
-    <div className="flex items-center justify-end gap-5 w-full px-4 rounded-md lg:px-10 shadow-md py-2">
+    <div className="flex items-center justify-between gap-5 w-full px-4 rounded-md lg:px-10 shadow-md py-2">
+      <h2 className="font-bold text-xl text-secondary"> Project Name</h2>
       <div className="flex items-center gap-10">
         {/* Notification Icon */}
         <Link to="/notification" className="h-fit mt-[10px]">

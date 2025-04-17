@@ -10,7 +10,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="flex gap-20">
+    <div className="flex gap-20 shadow-xl rounded-lg">
       <div className="w-1/2 mx-auto">
         <h2 className="text-2xl font-bold mb-5 text-center">Update Password</h2>
         <div>

@@ -66,7 +66,7 @@ const Contact = () => {
               align="center"
               className="flex-auto"
             >
-              <div className="bg-white rounded-xl shadow-[0px_0px_15px_4px_rgba(0,_0,_0,_0.1)] p-4 hover:bg-smart text-smart hover:text-white">
+              <div className="bg-white rounded-xl shadow-[0px_0px_15px_4px_rgba(0,_0,_0,_0.1)] p-4 hover:bg-smart text-smart hover:text-black">
                 {item.icon}
               </div>
               <div className="flex flex-col items-center">

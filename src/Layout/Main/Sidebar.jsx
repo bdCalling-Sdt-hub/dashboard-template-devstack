@@ -94,11 +94,11 @@ const Sidebar = () => {
       icon: renderIcon(SubscriptionManagement, "/products"),
       label: <Link to="/products">Products Management</Link>,
     },
-    {
-      key: "/inventory",
-      icon: renderIcon(InventoryManagement, "/inventory"),
-      label: <Link to="/inventory">Inventory Management</Link>,
-    },
+    // {
+    //   key: "/inventory",
+    //   icon: renderIcon(InventoryManagement, "/inventory"),
+    //   label: <Link to="/inventory">Inventory Management</Link>,
+    // },
     {
       key: "/subscription",
       icon: renderIcon(InventoryManagement, "/subscription"),
@@ -216,10 +216,11 @@ const Sidebar = () => {
           selectedKeys={[selectedKey]}
           openKeys={openKeys}
           onOpenChange={handleOpenChange}
-          className="font-poppins text-black sidebar-menu"
+          className="font-poppins text-black sidebar-menu py-10"
           style={{
             // borderRightColor: "transparent",
             background: "#fff",
+            padding:"30px 5px"
           }}
           items={menuItems.map((item) => ({
             ...item,

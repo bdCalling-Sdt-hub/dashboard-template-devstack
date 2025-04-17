@@ -135,7 +135,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex justify-center items-center shadow-xl rounded-lg">
       <Form
         form={form}
         layout="vertical"

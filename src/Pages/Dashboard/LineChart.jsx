@@ -189,7 +189,8 @@ const LineChart = () => {
         <select
           value={selectedYear}
           onChange={handleYearChange}
-          className="bg-primary text-white p-2 rounded-lg"
+          className="bg-primary text-white py-2 px-5 rounded-lg"
+          style={{outline:"none" , }}
         >
           
           <option value={2023}>2023</option>
