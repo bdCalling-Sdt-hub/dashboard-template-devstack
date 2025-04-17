@@ -1,170 +1,451 @@
-import React, { useState } from "react";
-import { CiExport } from "react-icons/ci";
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Space,
+  Popconfirm,
+  Typography,
+  Card,
+  Select,
+  Upload,
+  message,
+  Image,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ArrowLeftOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 
-const invoiceData = Array.from({ length: 25 }, (_, i) => ({
-  id: i + 1,
-  date: `2025-02-${String(i + 1).padStart(2, "0")}`,
-  name: `Insert Customer name here ${i + 1}`,
-  invoice: `Invoice Number -${1000 + i + 1}`,
-  amount: (Math.random() * 500 + 100).toFixed(2),
-  status: ["Paid", "Pending", "Overdue"][i % 3],
-  image:
-    "https://img.freepik.com/free-photo/horizontal-portrait-smiling-happy-young-pleasant-looking-female-wears-denim-shirt-stylish-glasses-with-straight-blonde-hair-expresses-positiveness-poses_176420-13176.jpg?t=st=1738490190~exp=1738493790~hmac=b46cc36bc7e142f100004fb36314caa6d6f130ca212ab54356fd31b979663135&w=1380",
-}));
+const { Title } = Typography;
+const { Option } = Select;
 
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const InvoiceTable = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedMonth, setSelectedMonth] = useState("February");
-  const itemsPerPage = 10;
-
-  const totalPages = Math.ceil(invoiceData.length / itemsPerPage);
-  const displayedInvoices = invoiceData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+const SubCategoryManagement = ({
+  categoryId,
+  categoryName,
+  onBack,
+  categories,
+}) => {
+  // State for subcategories
+  const [subCategories, setSubCategories] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form] = Form.useForm();
+  const [filteredCategoryId, setFilteredCategoryId] = useState(
+    categoryId || null
   );
+  const [imageUrl, setImageUrl] = useState(null);
+  const [fileList, setFileList] = useState([]);
+
+  // On first load, if categoryId is provided, use it as the initial filter
+  useEffect(() => {
+    if (categoryId) {
+      setFilteredCategoryId(categoryId);
+    } else if (categories && categories.length > 0) {
+      const savedCategoryId = localStorage.getItem("selectedCategoryId");
+      if (savedCategoryId) {
+        setFilteredCategoryId(Number(savedCategoryId));
+      } else {
+        setFilteredCategoryId(categories[0].id);
+      }
+    }
+  }, [categoryId, categories]);
+
+  // Store the selected category ID in localStorage for persistence
+  useEffect(() => {
+    if (filteredCategoryId) {
+      localStorage.setItem("selectedCategoryId", filteredCategoryId);
+    }
+  }, [filteredCategoryId]);
+
+  // Reset image state when modal is opened/closed
+  useEffect(() => {
+    if (modalVisible) {
+      if (editingId !== null) {
+        const subCategory = subCategories.find((sc) => sc.id === editingId);
+        if (subCategory?.imageUrl) {
+          setImageUrl(subCategory.imageUrl);
+          setFileList([
+            {
+              uid: "-1",
+              name: "subcategory-image.png",
+              status: "done",
+              url: subCategory.imageUrl,
+            },
+          ]);
+        } else {
+          setImageUrl(null);
+          setFileList([]);
+        }
+      } else {
+        setImageUrl(null);
+        setFileList([]);
+      }
+    }
+  }, [modalVisible, editingId, subCategories]);
+
+  // Mock data function - in a real app this would be an API call
+  const fetchSubCategories = () => {
+    // Mock data
+    const mockSubCategories = [
+      {
+        id: 1,
+        categoryId: 1,
+        name: "Smartphones",
+        description: "Mobile phones",
+        imageUrl: "https://i.ibb.co.com/d4tpsSPj/Frame-2147227088-1.png",
+      },
+      {
+        id: 2,
+        categoryId: 1,
+        name: "Laptops",
+        description: "Portable computers",
+        imageUrl: "https://i.ibb.co.com/C5dPm7xb/Frame-2147226698.png",
+      },
+      {
+        id: 3,
+        categoryId: 2,
+        name: "T-shirts",
+        description: "Casual wear",
+        imageUrl: "https://i.ibb.co.com/d4tpsSPj/Frame-2147227088-1.png",
+      },
+      {
+        id: 4,
+        categoryId: 3,
+        name: "Fiction",
+        description: "Novels and stories",
+        imageUrl: "https://i.ibb.co.com/C5dPm7xb/Frame-2147226698.png",
+      },
+    ];
+
+    return mockSubCategories;
+  };
+
+  // Load subcategories based on the selected category ID
+  useEffect(() => {
+    if (filteredCategoryId) {
+      const allSubCategories = fetchSubCategories();
+      const filteredSubCategories = allSubCategories.filter(
+        (sc) => sc.categoryId === Number(filteredCategoryId)
+      );
+      setSubCategories(filteredSubCategories);
+    }
+  }, [filteredCategoryId]);
+
+  // Handle image upload
+  const handleImageUpload = ({ file, fileList }) => {
+    setFileList(fileList);
+
+    if (file.status === "uploading") {
+      return;
+    }
+
+    if (file.status === "done") {
+      // In a real app, you would get the URL from the server response
+      // For now, we'll simulate with a placeholder
+      const uploadedImageUrl = URL.createObjectURL(file.originFileObj);
+      setImageUrl(uploadedImageUrl);
+      message.success(`${file.name} uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} upload failed.`);
+    }
+  };
+
+  // Configure image upload props
+  const uploadProps = {
+    name: "file",
+    listType: "picture",
+    maxCount: 1,
+    fileList: fileList,
+    beforeUpload: (file) => {
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        message.error("You can only upload image files!");
+        return Upload.LIST_IGNORE;
+      }
+      return false; // Prevent auto upload
+    },
+    onChange: handleImageUpload,
+    onRemove: () => {
+      setImageUrl(null);
+      setFileList([]);
+    },
+  };
+
+  // Add or update a subcategory
+  const handleSubCategorySave = (values) => {
+    if (editingId !== null) {
+      // Edit existing subcategory
+      setSubCategories(
+        subCategories.map((subCategory) =>
+          subCategory.id === editingId
+            ? {
+                ...subCategory,
+                ...values,
+                imageUrl: imageUrl || subCategory.imageUrl,
+              }
+            : subCategory
+        )
+      );
+      message.success("Subcategory updated successfully");
+    } else {
+      // Add new subcategory
+      const newSubCategory = {
+        id: Math.max(0, ...subCategories.map((c) => c.id || 0)) + 1,
+        categoryId: values.categoryId || filteredCategoryId, // Use categoryId from the form or current filter
+        imageUrl: imageUrl,
+        ...values,
+      };
+      setSubCategories([...subCategories, newSubCategory]);
+      message.success("Subcategory added successfully");
+
+      // If we added to a different category than what's filtered, update the filter
+      if (values.categoryId !== filteredCategoryId) {
+        setFilteredCategoryId(values.categoryId);
+      }
+    }
+    resetModal();
+  };
+
+  // Delete a subcategory
+  const handleSubCategoryDelete = (id) => {
+    setSubCategories(
+      subCategories.filter((subCategory) => subCategory.id !== id)
+    );
+    message.success("Subcategory deleted successfully");
+  };
+
+  // Open modal for adding/editing
+  const showModal = (id = null) => {
+    setEditingId(id);
+
+    // If editing, populate the form
+    if (id !== null) {
+      const subCategory = subCategories.find((sc) => sc.id === id);
+      form.setFieldsValue(subCategory);
+    } else {
+      form.resetFields();
+      // Set the current categoryId as default for new subcategories
+      form.setFieldsValue({ categoryId: Number(filteredCategoryId) });
+    }
+
+    setModalVisible(true);
+  };
+
+  // Reset modal state
+  const resetModal = () => {
+    setModalVisible(false);
+    setEditingId(null);
+    form.resetFields();
+    setImageUrl(null);
+    setFileList([]);
+  };
+
+  // Handle category filter change
+  const handleCategoryFilterChange = (value) => {
+    setFilteredCategoryId(Number(value));
+    localStorage.setItem("selectedCategoryId", value);
+  };
+
+  // Get current category name
+  const getCurrentCategoryName = () => {
+    if (!categories) return "";
+    const currentCategory = categories.find(
+      (cat) => cat.id === Number(filteredCategoryId)
+    );
+    return currentCategory ? currentCategory.name : categoryName || "";
+  };
+
+  // SubCategory columns for table
+  const subCategoryColumns = [
+    {
+      title: "Image",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      align: "center",
+      render: (imageUrl) =>
+        imageUrl ? (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <img
+              src={imageUrl}
+              alt="thumbnail"
+              style={{ width: 100, height: 40 }}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              width: 50,
+              height: 50,
+              background: "#f0f0f0",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            No Image
+          </div>
+        ),
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      align: "center",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      align: "center",
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      align: "center",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => showModal(record.id)}
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Are you sure you want to delete this subcategory?"
+            onConfirm={() => handleSubCategoryDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger icon={<DeleteOutlined />}>
+              Delete
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
   return (
-    <div className="p-4">
-      <div className="flex gap-6 px-2 rounded-md text-[#5C5C5C]  justify-end items-center mb-4">
-        <select
-          className="border p-2 rounded bg-white"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-        >
-          {months.map((month) => (
-            <option key={month} value={month}>
-              {month}
-            </option>
-          ))}
-        </select>
-        <button className="  px-4 py-2 bg-white text-[#5C5C5C] flex items-center gap-1 border-[#C0C0C0] border-2 rounded">
-          <CiExport />
-          Export
-        </button>
-      </div>
-      <table className="w-full border-collapse shadow-lg rounded-lg overflow-hidden">
-        <thead>
-          <tr className="bg-gray-100 border-b border-gray-300 text-left">
-            <th className="p-2 text-center">
-           
-              <input type="checkbox" />
-            </th>
-            <th className="p-2 text-center">
-              
-              Date
-            </th>
-            <th className="p-2 text-center">
-             
-              Name
-            </th>
-            <th className="p-2 text-center">
-             
-              Invoice
-            </th>
-            <th className="p-2 text-center">
-             
-              Amount
-            </th>
-            <th className="p-2 text-center">
-            
-              Status
-            </th>
-            <th className="p-2 text-center">
-             
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {displayedInvoices.map((invoice) => (
-            <tr
-              key={invoice.id}
-              className="border-b border-gray-300 text-center"
+    <div className="p-6">
+      <Card>
+        <div className="flex justify-between items-center mb-4">
+          <Space>
+            <Button
+              type="default"
+              icon={<ArrowLeftOutlined />}
+              onClick={onBack}
             >
-              <td className="p-2">
-                <input type="checkbox" />
-              </td>
-              <td className="p-2">{invoice.date}</td>
-              <td className="flex items-center gap-2 p-2 justify-start">
-                <img
-                  src={invoice.image}
-                  alt={invoice.name}
-                  className="w-10 h-10 rounded-full"
-                />
-                <p>{invoice.name}</p>
-              </td>
-              <td className="p-2">{invoice.invoice}</td>
-              <td className="p-2">${invoice.amount}</td>
-              <td
-                className={`p-2 font-semibold ${
-                  invoice.status === "Paid"
-                    ? "text-green-500"
-                    : invoice.status === "Pending"
-                    ? "text-yellow-500"
-                    : "text-red-500"
-                }`}
-              >
-                {invoice.status}
-              </td>
-              <td className="p-2 flex gap-2 justify-center">
-                <button className="bg-yellow-400 text-white px-2 py-1 rounded">
-                  👁
-                </button>
-                <button className="bg-red-500 text-white px-2 py-1 rounded">
-                  🗑
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex justify-center mt-4 gap-2">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
-        >
-          ◀
-        </button>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`px-3 py-1 rounded ${
-              currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-300"
-            }`}
+              Back to Categories
+            </Button>
+            <Title level={4} className="m-0">
+              Subcategories of {getCurrentCategoryName()}
+            </Title>
+          </Space>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => showModal()}
           >
-            {i + 1}
-          </button>
-        ))}
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-          className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
-        >
-          ▶
-        </button>
-      </div>
+            Add Subcategory
+          </Button>
+        </div>
+
+        {/* Category Filter - Now ALWAYS enabled, regardless of source */}
+        <div className="mb-4">
+          <Select
+            value={filteredCategoryId}
+            onChange={handleCategoryFilterChange}
+            style={{ width: 200 }}
+          >
+            {categories?.map((cat) => (
+              <Option key={cat.id} value={cat.id}>
+                {cat.name}
+              </Option>
+            ))}
+          </Select>
+        </div>
+
+        <Table
+          columns={subCategoryColumns}
+          dataSource={subCategories.map((item) => ({ ...item, key: item.id }))}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+          locale={{ emptyText: "No subcategories found for this category" }}
+        />
+      </Card>
+
+      {/* Modal for add/edit subcategory */}
+      <Modal
+        title={`${editingId !== null ? "Edit" : "Add"} Subcategory`}
+        open={modalVisible}
+        onCancel={resetModal}
+        footer={null}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSubCategorySave}>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, message: "Please input the name!" }]}
+          >
+            <Input placeholder="Enter name" />
+          </Form.Item>
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[
+              { required: true, message: "Please input the description!" },
+            ]}
+          >
+            <Input.TextArea rows={4} placeholder="Enter description" />
+          </Form.Item>
+          <Form.Item
+            label="Category"
+            name="categoryId"
+            initialValue={Number(filteredCategoryId)}
+            rules={[{ required: true, message: "Please select a category!" }]}
+          >
+            <Select>
+              {categories?.map((cat) => (
+                <Option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Subcategory Image" name="image">
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />}>Upload Image</Button>
+            </Upload>
+          </Form.Item>
+          {/* {imageUrl && (
+            <div style={{ marginBottom: 16 }}>
+              <Image
+                src={imageUrl}
+                alt="Preview"
+                width={200}
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+          )} */}
+          <Form.Item className="text-right">
+            <Space>
+              <Button onClick={resetModal}>Cancel</Button>
+              <Button type="primary" htmlType="submit">
+                {editingId !== null ? "Update" : "Save"}
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
 
-export default InvoiceTable;
+export default SubCategoryManagement;

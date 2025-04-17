@@ -136,9 +136,82 @@ input[type="number"]::-webkit-inner-spin-button {
 .svg-active svg path {
   fill: white !important;
 }
+/* Prevent hover color change */
+.ant-table-row:hover {
+  background-color: transparent !important;
+}
+
+.red-row {
+  background-color: #f8d7da; 
+}
 
 
 
+
+/* Add these styles to your global CSS file or in the relevant component style file */
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+}
+
+.logo-container {
+  flex-shrink: 0;
+}
+
+.menu-container {
+  flex-grow: 1; 
+  overflow-y: auto; 
+  padding:0 5px; 
+  border-radius: 5%;
+}
+
+.sidebar-menu {
+  padding: 0;
+  background: #4E9DAB; 
+}
+
+.sidebar-menu .ant-menu-item {
+  padding-left: 20px;
+  /* transition: background-color 0.0s ease, color 0.0s ease; */
+}
+
+.sidebar-menu .ant-menu-item:hover {
+  background-color: #4E9DAB; /* Hover effect */
+}
+
+.sidebar-menu .ant-menu-item-selected {
+  /* background-color: #007bff !important; Active item background */
+  color: white; /* Active item text color */
+}
+
+.sidebar-menu .ant-menu-submenu-title {
+  padding-left: 20px;
+}
+
+.sidebar-menu .ant-menu-submenu-selected {
+  /* background-color: #007bff !important; Active submenu */
+  color: white;
+}
+
+/* Custom Scrollbar */
+.menu-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.menu-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.menu-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.menu-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 
 

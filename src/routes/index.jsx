@@ -35,6 +35,8 @@ import ProductManagement from "../components/productManagement/ProductsManagemen
 import FAQSection from "../components/faq/Faq";
 import SubscriptionPackagePage from "../Pages/Dashboard/Subscription";
 import PackagesPlans from "../Pages/Dashboard/Subscription";
+import SubCategoryManagement from "../Pages/Dashboard/SubCategory";
+import Contact from "../Pages/Dashboard/Contact";
 // import SalesRepsManagementTable from "../components/SalesRepsManagement/SalesRepsManagement";
 
 const router = createBrowserRouter([
@@ -104,6 +106,10 @@ const router = createBrowserRouter([
         element: <AboutUs />,
       },
       {
+        path: "/contact",
+        element: <Contact />,
+      },
+      {
         path: "/privacy-policy",
         element: <PrivacyPolicy />,
       },
@@ -119,10 +125,10 @@ const router = createBrowserRouter([
         path: "/faq",
         element: <FAQSection />,
       },
-      {
-        path: "/sub-category",
-        element: <SubCategory />,
-      },
+      // {
+      //   path: "/sub-category",
+      //   element: <SubCategoryManagement />,
+      // },
       {
         path: "/profile",
         element: <AdminProfile />,

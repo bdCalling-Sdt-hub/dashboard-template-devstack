@@ -31,7 +31,7 @@ const ProductDetailModal = ({ visible, onCancel, product }) => {
       open={visible}
       onCancel={onCancel}
       footer={null}
-      width={800}
+      width={1100}
     >
       <div className="product-detail-content ">
         {/* Product Images */}
@@ -66,6 +66,19 @@ const ProductDetailModal = ({ visible, onCancel, product }) => {
                       maxHeight: "70px",
                       objectFit: "contain",
                     }}
+                    // preview={{
+                    //   imageRender: (originalNode, info) => {
+                    //     return (
+                    //       <div style={{ textAlign: "center" }}>
+                    //         <img
+                    //           src={info.src}
+                    //           alt="preview"
+                    //           style={{ maxWidth: "1000px", maxHeight: "800px" }} 
+                    //         />
+                    //       </div>
+                    //     );
+                    //   },
+                    // }}
                     className="rounded-md"
                   />
                 ))}
@@ -81,15 +94,15 @@ const ProductDetailModal = ({ visible, onCancel, product }) => {
           size="small"
           style={{ marginBottom: 0 }}
         >
-          <Descriptions.Item label="Category" >
+          <Descriptions.Item label="Category">
             {product.category}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Sub Category" >
+          <Descriptions.Item label="Sub Category">
             {product.subCategory}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Price" >
+          <Descriptions.Item label="Price">
             <span
               style={{ color: "#f50", fontWeight: "bold", fontSize: "16px" }}
             >
@@ -97,22 +110,22 @@ const ProductDetailModal = ({ visible, onCancel, product }) => {
             </span>
           </Descriptions.Item>
 
-          <Descriptions.Item label="Quantity" >
+          <Descriptions.Item label="Quantity">
             {product.quantity} in stock
           </Descriptions.Item>
 
-          <Descriptions.Item label="Quality" >
+          <Descriptions.Item label="Quality">
             {product.quality}
           </Descriptions.Item>
 
           {product.createdAt && (
-            <Descriptions.Item label="Created Date" >
+            <Descriptions.Item label="Created Date">
               {formatDate(product.createdAt)}
             </Descriptions.Item>
           )}
 
           {product.updatedAt && (
-            <Descriptions.Item label="Last Updated" >
+            <Descriptions.Item label="Last Updated">
               {formatDate(product.updatedAt)}
             </Descriptions.Item>
           )}

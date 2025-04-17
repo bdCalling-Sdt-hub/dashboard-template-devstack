@@ -10,7 +10,7 @@ import {
   InventoryManagement,
   LoyaltyProgram,
   SubscriptionManagement,
-  OrderManagement
+  OrderManagement,
 } from "../../components/common/Svg"; // Import the relevant SVGs
 import image4 from "../../assets/image4.png"; // Logo image
 
@@ -70,9 +70,9 @@ const Sidebar = () => {
       label: <Link to="/">Dashboard Overview</Link>,
     },
     {
-      key: "/orderManagement",
-      icon: renderIcon(OrderManagement, "/orderManagement"),
-      label: <Link to="/orderManagement">Orders Management</Link>,
+      key: "/salesRepsManage",
+      icon: renderIcon(SalesRepsManagement, "/salesRepsManage"),
+      label: <Link to="/salesRepsManage">Sales Reps Management</Link>,
     },
     {
       key: "/retailer",
@@ -80,29 +80,9 @@ const Sidebar = () => {
       label: <Link to="/retailer">Retailer Management</Link>,
     },
     {
-      key: "/salesRepsManage",
-      icon: renderIcon(SalesRepsManagement, "/salesRepsManage"),
-      label: <Link to="/salesRepsManage">Sales Reps Management</Link>,
-    },
-    {
-      key: "/inventory",
-      icon: renderIcon(InventoryManagement, "/inventory"),
-      label: <Link to="/inventory">Inventory Management</Link>,
-    },
-    {
-      key: "/subscription",
-      icon: renderIcon(InventoryManagement, "/subscription"),
-      label: <Link to="/subscription">Subscription Package</Link>,
-    },
-    {
-      key: "/loyaltyProgram",
-      icon: renderIcon(LoyaltyProgram, "/loyaltyProgram"),
-      label: <Link to="/loyaltyProgram">Loyalty Program</Link>,
-    },
-    {
-      key: "/subsciption",
-      icon: renderIcon(SubscriptionManagement, "/subsciption"),
-      label: <Link to="/subsciption">Subscription Management</Link>,
+      key: "/orderManagement",
+      icon: renderIcon(OrderManagement, "/orderManagement"),
+      label: <Link to="/orderManagement">Orders Management</Link>,
     },
     {
       key: "/category",
@@ -114,6 +94,43 @@ const Sidebar = () => {
       icon: renderIcon(SubscriptionManagement, "/products"),
       label: <Link to="/products">Products Management</Link>,
     },
+    {
+      key: "/inventory",
+      icon: renderIcon(InventoryManagement, "/inventory"),
+      label: <Link to="/inventory">Inventory Management</Link>,
+    },
+    {
+      key: "/subscription",
+      icon: renderIcon(InventoryManagement, "/subscription"),
+      label: <Link to="/subscription">Subscription Package</Link>,
+    },
+    // {
+    //   key: "/loyaltyProgram",
+    //   icon: renderIcon(LoyaltyProgram, "/loyaltyProgram"),
+    //   label: <Link to="/loyaltyProgram">Loyalty Program</Link>,
+    // },
+    {
+      key: "/subsciption",
+      icon: renderIcon(SubscriptionManagement, "/subsciption"),
+      label: <Link to="/subsciption">Subscription Management</Link>,
+    },
+
+    // {
+    //   key: "category",
+    //   icon: renderIcon(SubscriptionManagement, "category"),
+    //   label: "Category Managemnet",
+    //   children: [
+    //     {
+    //       key: "/category",
+    //       label: <Link to="/category">Category</Link>,
+    //     },
+    //     // {
+    //     //   key: "/sub-category",
+    //     //   label: <Link to="/sub-category">Sub Category</Link>,
+    //     // },
+    //   ],
+    // },
+
     {
       key: "/user",
       icon: renderIcon(SubscriptionManagement, "/user"),
@@ -129,16 +146,24 @@ const Sidebar = () => {
           label: <Link to="/profile">Update Profile</Link>,
         },
         {
+          key: "/faq",
+          label: <Link to="/faq">FAQ </Link>,
+        },
+        {
+          key: "/contact",
+          label: <Link to="/contact">Contact Us</Link>,
+        },
+        // {
+        //   key: "/about",
+        //   label: <Link to="/about">About Us </Link>,
+        // },
+        {
           key: "/terms-and-conditions",
           label: <Link to="/terms-and-conditions">Terms And Condition</Link>,
         },
         {
           key: "/privacy-policy",
           label: <Link to="/privacy-policy">Privacy Policy</Link>,
-        },
-        {
-          key: "/faq",
-          label: <Link to="/faq">FAQ </Link>,
         },
       ],
     },
@@ -176,35 +201,39 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="mb-20 h-screen">
+    <div className="sidebar-container">
       <Link
         to={"/"}
-        className="flex items-center justify-center py-4 border-b-2 border-primary"
+        className="logo-container flex items-center justify-center py-4 "
       >
         <img src={image4} alt="logo" className="w-40 h-32" />
       </Link>
-      <Menu
-        mode="inline"
-        selectedKeys={[selectedKey]}
-        openKeys={openKeys}
-        onOpenChange={handleOpenChange}
-        className="font-poppins text-black sidebar-menu"
-        style={{
-          borderRightColor: "transparent",
-          background: "transparent",
-          marginTop: "30px",
-        }}
-        items={menuItems.map((item) => ({
-          ...item,
-          label: <span>{item.label}</span>,
-          children: item.children
-            ? item.children.map((subItem) => ({
-                ...subItem,
-                label: <span>{subItem.label}</span>,
-              }))
-            : undefined,
-        }))}
-      />
+
+      {/* Scrollable menu section */}
+      <div className="menu-container">
+        <Menu
+          mode="inline"
+          selectedKeys={[selectedKey]}
+          openKeys={openKeys}
+          onOpenChange={handleOpenChange}
+          className="font-poppins text-black sidebar-menu"
+          style={{
+            // borderRightColor: "transparent",
+            background: "#FAF2DF",
+          }}
+          items={menuItems.map((item) => ({
+            ...item,
+            label: <span>{item.label}</span>,
+            children: item.children
+              ? item.children.map((subItem) => ({
+                  ...subItem,
+                  label: <span>{subItem.label}</span>,
+                }))
+              : undefined,
+          }))}
+        />
+      </div>
+
       <Modal
         centered
         title="Confirm Logout"

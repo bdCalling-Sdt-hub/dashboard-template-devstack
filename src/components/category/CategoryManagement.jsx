@@ -10,17 +10,18 @@ import {
   Typography,
   Breadcrumb,
   Card,
-  message, // Added the message import
+  Upload,
+  message,
+  Image,
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  FolderOutlined,
   EyeOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
-import SubCategoryManagement from "./SubCategoryManagement";
-// import SubCategoryManagement from "./SubCategoryManagement";
+import SubCategoryManagement from "../../Pages/Dashboard/SubCategory";
 
 const { Title } = Typography;
 
@@ -32,18 +33,61 @@ const CategoryManagement = () => {
   const [form] = Form.useForm();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showSubCategories, setShowSubCategories] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [fileList, setFileList] = useState([]);
 
   // Load initial data (mock data for demonstration)
   useEffect(() => {
     // In a real application, this would be an API call
     const mockCategories = [
-      { id: 1, name: "Electronics", description: "Electronic devices" },
-      { id: 2, name: "Clothing", description: "Fashion items" },
-      { id: 3, name: "Books", description: "Reading materials" },
+      {
+        id: 1,
+        name: "Electronics",
+        description: "Electronic devices",
+        imageUrl: "https://i.ibb.co.com/C5dPm7xb/Frame-2147226698.png",
+      },
+      {
+        id: 2,
+        name: "Clothing",
+        description: "Fashion items",
+        imageUrl: "https://i.ibb.co.com/d4tpsSPj/Frame-2147227088-1.png",
+      },
+      {
+        id: 3,
+        name: "Books",
+        description: "Reading materials",
+        imageUrl: "https://i.ibb.co.com/C5dPm7xb/Frame-2147226698.png",
+      },
     ];
 
     setCategories(mockCategories);
   }, []);
+
+  // Reset image state when modal is opened/closed
+  useEffect(() => {
+    if (modalVisible) {
+      if (editingId !== null) {
+        const category = categories.find((c) => c.id === editingId);
+        if (category?.imageUrl) {
+          setImageUrl(category.imageUrl);
+          setFileList([
+            {
+              uid: "-1",
+              name: "category-image.png",
+              status: "done",
+              url: category.imageUrl,
+            },
+          ]);
+        } else {
+          setImageUrl(null);
+          setFileList([]);
+        }
+      } else {
+        setImageUrl(null);
+        setFileList([]);
+      }
+    }
+  }, [modalVisible, editingId, categories]);
 
   // Add or update a category
   const handleCategorySave = (values) => {
@@ -51,7 +95,13 @@ const CategoryManagement = () => {
       // Edit existing category
       setCategories(
         categories.map((category) =>
-          category.id === editingId ? { ...category, ...values } : category
+          category.id === editingId
+            ? {
+                ...category,
+                ...values,
+                imageUrl: imageUrl || category.imageUrl,
+              }
+            : category
         )
       );
       message.success("Category updated successfully");
@@ -60,6 +110,7 @@ const CategoryManagement = () => {
       const newCategory = {
         id: Math.max(0, ...categories.map((c) => c.id)) + 1,
         ...values,
+        imageUrl: imageUrl,
       };
       setCategories([...categories, newCategory]);
       message.success("Category added successfully");
@@ -94,6 +145,8 @@ const CategoryManagement = () => {
     setModalVisible(false);
     setEditingId(null);
     form.resetFields();
+    setImageUrl(null);
+    setFileList([]);
   };
 
   // View subcategories for a specific category
@@ -108,21 +161,94 @@ const CategoryManagement = () => {
     setSelectedCategory(null);
   };
 
+  // Handle image upload
+  const handleImageUpload = ({ file, fileList }) => {
+    setFileList(fileList);
+
+    if (file.status === "uploading") {
+      return;
+    }
+
+    if (file.status === "done") {
+      // In a real app, you would get the URL from the server response
+      // For now, we'll simulate with a placeholder
+      const uploadedImageUrl = URL.createObjectURL(file.originFileObj);
+      setImageUrl(uploadedImageUrl);
+      message.success(`${file.name} uploaded successfully`);
+    } else if (file.status === "error") {
+      message.error(`${file.name} upload failed.`);
+    }
+  };
+
+  // Configure image upload props
+  const uploadProps = {
+    name: "file",
+    listType: "picture",
+    maxCount: 1,
+    fileList: fileList,
+    beforeUpload: (file) => {
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        message.error("You can only upload image files!");
+        return Upload.LIST_IGNORE;
+      }
+      return false; // Prevent auto upload
+    },
+    onChange: handleImageUpload,
+    onRemove: () => {
+      setImageUrl(null);
+      setFileList([]);
+    },
+  };
+
   // Category columns for table
   const categoryColumns = [
+    {
+      title: "Image",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
+      align: "center",
+      render: (imageUrl) =>
+        imageUrl ? (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Image
+              src={imageUrl}
+              alt="image"
+              style={{ width: 100, height: 40 }}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              width: 50,
+              height: 50,
+              background: "#f0f0f0",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            No Image
+          </div>
+        ),
+    },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      align: "center",
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      align: "center",
+      width:400
     },
     {
       title: "Actions",
       key: "actions",
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -163,17 +289,13 @@ const CategoryManagement = () => {
         categoryId={selectedCategory}
         categoryName={category ? category.name : ""}
         onBack={backToCategories}
+        categories={categories}
       />
     );
   }
 
   return (
     <div className="p-6">
-      {/* <Breadcrumb className="mb-4">
-        <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
-        <Breadcrumb.Item>Category Management</Breadcrumb.Item>
-      </Breadcrumb> */}
-
       <Card>
         <div className="flex justify-between items-center mb-4">
           <Title level={4}>Category List</Title>
@@ -217,6 +339,21 @@ const CategoryManagement = () => {
           >
             <Input.TextArea rows={4} placeholder="Enter description" />
           </Form.Item>
+          <Form.Item label="Category Image" name="image">
+            <Upload {...uploadProps}>
+              <Button icon={<UploadOutlined />}>Upload Image</Button>
+            </Upload>
+          </Form.Item>
+          {/* {imageUrl && (
+            <div style={{ marginBottom: 16 }}>
+              <Image
+                src={imageUrl}
+                alt="Preview"
+                width={200}
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+          )} */}
           <Form.Item className="text-right">
             <Space>
               <Button onClick={resetModal}>Cancel</Button>

@@ -2,12 +2,13 @@ import React from "react";
 import { LuBadgeDollarSign } from "react-icons/lu";
 import { FaUsers } from "react-icons/fa6";
 
-const SubscriptionCard = () => {
+const HomeCard = () => {
   // Data for cards
   const cardData = [
-    { icon: FaUsers, value: "357", label: "Total Subscribers" },
-    { icon: FaUsers, value: "105", label: "Running Subscribers" },
-    { icon: FaUsers, value: "58", label: "Inactive Subscribers" },
+    { icon: FaUsers, value: "100", label: "Total Sales" },
+    { icon: FaUsers, value: "$12", label: "Total Commission" },
+    { icon: LuBadgeDollarSign, value: "$5000", label: "Total Orders" },
+    { icon: LuBadgeDollarSign, value: "$5000", label: "Total Orders" },
   ];
 
   return (
@@ -41,4 +42,4 @@ const SalesRepsCard = ({ icon: Icon, value, label }) => {
   );
 };
 
-export default SubscriptionCard;
+export default HomeCard;

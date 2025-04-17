@@ -1,30 +1,37 @@
-import React from 'react'
-import Sidebar from './Sidebar';
-import Header from './Header';
-import { Outlet } from 'react-router-dom';
+import React, { useState } from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import { Outlet } from "react-router-dom";
 
 const Main = () => {
-    return (
-      <div className="grid grid-cols-12">
-        {/* side bar */}
-        <div className="col-span-2 h-screen border-r-2 border-primary overflow-y-auto bg-baseBg">
-          <Sidebar />
-        </div>
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-        {/* main container with header */}
-        <div className="col-span-10">
-          {/* <div className='h-[68px] flex items-center  pr-5 '>
-                    <Header/>
-                </div> */}
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
 
-          <div className="bg-baseBg h-screen overflow-hidden overflow-y-auto ">
-            <div className=" overflow-y-auto rounded-md py-6 px-4 lg:px-10">
+  return (
+    <div className="h-screen w-screen flex bg-baseBg overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-80 h-screen  bg-secondary ">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 h-screen ">
+        <Header toggleSidebar={toggleSidebar} />
+        <div className="bg-[#F6F6F6] h-[calc(100vh-68px)] mt-3">
+          {/* -68px */}
+          <div className="h-full overflow-y-auto bg-baseBg rounded-md p-7 pt-0">
+            {/* Outlet for other dynamic pages */}
+            <div className="mt-6">
               <Outlet />
             </div>
           </div>
         </div>
       </div>
-    );
-}
+    </div>
+  );
+};
 
-export default Main
+export default Main;

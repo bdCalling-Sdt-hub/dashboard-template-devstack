@@ -103,6 +103,12 @@ const SubscriptionTable = () => {
       key: "billingDate",
       align: "center",
     },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+    },
     // {
     //   title: "Status",
     //   dataIndex: "status",
@@ -120,9 +126,6 @@ const SubscriptionTable = () => {
           >
             View Details
           </button>
-          <GradientButton type="link" onClick={() => showStatusModal(record)}>
-            Update Status
-          </GradientButton>
         </>
       ),
       align: "center",

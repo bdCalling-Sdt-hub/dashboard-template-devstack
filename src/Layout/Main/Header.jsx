@@ -11,8 +11,7 @@ const Header = () => {
   const { user } = useUser();
   const [selectedLanguage, setSelectedLanguage] = useState("eng-us");
 
-  console.log(selectedLanguage)
-  console.log(user)
+
 
   const src = user?.image?.startsWith("https")
     ? user?.image
@@ -23,9 +22,9 @@ const Header = () => {
   };
 
   return (
-    <div className="flex items-center justify-end gap-5 w-full px-4 lg:px-10">
+    <div className="flex items-center justify-end gap-5 w-full px-4 rounded-md lg:px-10 shadow-md py-2">
       <div className="flex items-center gap-10">
-        <Select
+        {/* <Select
           value={selectedLanguage}
           onChange={handleLanguageChange}
           style={{ width: 150 }}
@@ -38,10 +37,10 @@ const Header = () => {
             ),
             value: code,
           }))}
-        />
+        /> */}
         <Link to="/notification" className="h-fit mt-[10px]">
           <Badge count={5} backgroundcolor="#3FC7EE">
-            <FaRegBell color="#3FC7EE" size={24} />
+            <FaRegBell color="#3FC7EE" size={32} />
           </Badge>
         </Link>
         <Link to="/profile" className="flex items-center gap-3">
@@ -57,9 +56,11 @@ const Header = () => {
           />
           <div className="flex flex-col">
             <p>
-              {user?.firstName} {user?.lastName}
+              {/* {user?.firstName} {user?.lastName} */}
+              Md Jowel Ahmed
             </p>
-            <p>{user?.role || "user"}</p>
+            {/* <p>{user?.role || "user"}</p> */}
+            Admin
           </div>
         </Link>
       </div>

@@ -4,13 +4,22 @@ import {
   Form,
   Input,
   Button,
-  Table,
-  Space,
-  Popconfirm,
+  Collapse,
   message,
+  Popconfirm,
+  Tooltip,
+  Empty,
 } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  QuestionCircleOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 import GradientButton from "../common/GradiantButton";
+
+const { Panel } = Collapse;
 
 const FAQSection = () => {
   const [faqs, setFaqs] = useState([
@@ -22,7 +31,8 @@ const FAQSection = () => {
     {
       id: 2,
       question: "What is a component?",
-      answer: "A component is a building block of React applications.",
+      answer:
+        "A component is a building block of React applications.React is a JavaScript library for building user interfaces.React is a JavaScript library for building user interfaces A component is a building block of React applications.React is a JavaScript library for building user interfaces.React is a JavaScript library for building user interfaces",
     },
     {
       id: 3,
@@ -32,19 +42,20 @@ const FAQSection = () => {
     },
   ]);
   const [visible, setVisible] = useState(false);
-  const [editingFAQ, setEditingFAQ] = useState(null); // Holds the FAQ being edited or null for "Add" mode
+  const [editingFAQ, setEditingFAQ] = useState(null);
   const [form] = Form.useForm();
 
   // Open modal to add a new FAQ
   const handleAddFAQ = () => {
-    setEditingFAQ(null); // Clear any editing data
+    setEditingFAQ(null);
     form.resetFields();
     setVisible(true);
   };
 
   // Open modal to edit an existing FAQ
-  const handleEditFAQ = (faq) => {
-    setEditingFAQ(faq); // Set the FAQ to be edited
+  const handleEditFAQ = (faq, event) => {
+    event.stopPropagation();
+    setEditingFAQ(faq);
     form.setFieldsValue({
       question: faq.question,
       answer: faq.answer,
@@ -53,7 +64,8 @@ const FAQSection = () => {
   };
 
   // Handle deleting a FAQ
-  const handleDeleteFAQ = (id) => {
+  const handleDeleteFAQ = (id, event) => {
+    event.stopPropagation();
     setFaqs(faqs.filter((faq) => faq.id !== id));
     message.success("FAQ deleted successfully");
   };
@@ -88,73 +100,111 @@ const FAQSection = () => {
     }
   };
 
-  // Columns for the FAQ table
-  const columns = [
-    {
-      title: "Question",
-      dataIndex: "question",
-      key: "question",
-    },
-    {
-      title: "Answer",
-      dataIndex: "answer",
-      key: "answer",
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record) => (
-        <Space>
-          <GradientButton
-            icon={<EditOutlined />}
-            onClick={() => handleEditFAQ(record)}
+  const panelExtra = (faq) => (
+    <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
+      <Tooltip title="Edit FAQ">
+        <Button
+          icon={<EditOutlined />}
+          size="small"
+          className="bg-primary px-3 text-white py-[18px] flex items-center hover:bg-red-600"
+          onClick={(e) => handleEditFAQ(faq, e)}
+        >
+          Edit
+        </Button>
+      </Tooltip>
+      <Tooltip title="Delete FAQ">
+        <Popconfirm
+          title="Are you sure you want to delete this FAQ?"
+          onConfirm={(e) => handleDeleteFAQ(faq.id, e)}
+          okText="Yes"
+          cancelText="No"
+          placement="left"
+        >
+          <Button
+            icon={<DeleteOutlined className="text-2xl" />}
+            // size="small"
+            className="bg-red-500 text-white py-[18px] flex items-center hover:bg-red-600"
           >
-            Edit
-          </GradientButton>
-          <Popconfirm
-            title="Are you sure you want to delete this FAQ?"
-            onConfirm={() => handleDeleteFAQ(record.id)}
-            okText="Yes"
-            cancelText="No"
-            className=" "
-          >
-            <Button
-              icon={<DeleteOutlined />}
-            //   danger
-              className="bg-red-500 text-white h-10"
-            >
-              Delete
-            </Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+            Delete
+          </Button>
+        </Popconfirm>
+      </Tooltip>
+    </div>
+  );
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2>FAQ Section</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAddFAQ}>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-gray-500">Find answers to common questions</p>
+        </div>
+        <GradientButton
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleAddFAQ}
+          className="flex items-center"
+        >
           Add FAQ
-        </Button>
+        </GradientButton>
       </div>
 
-      {/* FAQ Table */}
-      <Table
-        columns={columns}
-        dataSource={faqs}
-        rowKey="id"
-        pagination={false}
-      />
+      {/* FAQ Accordion */}
+      {faqs.length > 0 ? (
+        <Collapse
+          bordered={false}
+          className="bg-gray-50 rounded-lg"
+          expandIcon={({ isActive }) => (
+            <DownOutlined
+              rotate={isActive ? 180 : 0}
+              className="text-blue-500"
+            />
+          )}
+        >
+          {faqs.map((faq) => (
+            <Panel
+              key={faq.id}
+              header={
+                <div className="flex items-center">
+                  <QuestionCircleOutlined className="text-blue-500 mr-2" />
+                  <span className="font-medium">{faq.question}</span>
+                </div>
+              }
+              extra={panelExtra(faq)}
+              className="mb-3 border border-gray-200 rounded-md overflow-hidden"
+            >
+              <div className="p-2 bg-white rounded-md">{faq.answer}</div>
+            </Panel>
+          ))}
+        </Collapse>
+      ) : (
+        <Empty description="No FAQs added yet" className="my-10" />
+      )}
 
       {/* Add/Edit FAQ Modal */}
       <Modal
-        title={editingFAQ ? "Edit FAQ" : "Add New FAQ"}
-        visible={visible}
+        title={
+          <div className="flex items-center">
+            {editingFAQ ? (
+              <EditOutlined className="mr-2 text-blue-500" />
+            ) : (
+              <PlusOutlined className="mr-2 text-green-500" />
+            )}
+            <span>{editingFAQ ? "Edit FAQ" : "Add New FAQ"}</span>
+          </div>
+        }
+        open={visible}
         onCancel={() => setVisible(false)}
-        onOk={handleSubmit}
-        okText={editingFAQ ? "Update" : "Add FAQ"}
+        footer={[
+          <Button key="cancel" onClick={() => setVisible(false)}>
+            Cancel
+          </Button>,
+          <GradientButton key="submit" onClick={handleSubmit}>
+            {editingFAQ ? "Update" : "Add FAQ"}
+          </GradientButton>,
+        ]}
       >
         <Form
           form={form}
@@ -164,13 +214,14 @@ const FAQSection = () => {
             question: "",
             answer: "",
           }}
+          className="mt-4"
         >
           <Form.Item
             name="question"
             label="Question"
             rules={[{ required: true, message: "Please enter the question" }]}
           >
-            <Input placeholder="Enter question" />
+            <Input placeholder="Enter question" className="rounded-md" />
           </Form.Item>
 
           <Form.Item
@@ -178,7 +229,11 @@ const FAQSection = () => {
             label="Answer"
             rules={[{ required: true, message: "Please enter the answer" }]}
           >
-            <Input.TextArea rows={4} placeholder="Enter answer" />
+            <Input.TextArea
+              rows={4}
+              placeholder="Enter answer"
+              className="rounded-md"
+            />
           </Form.Item>
         </Form>
       </Modal>

@@ -24,9 +24,7 @@ const ProductsTable = ({
   const [filters, setFilters] = useState({
     category: "",
     subCategory: "",
-    priceSort: "",
-    dateSort: "",
-    nameSort: "",
+    sortBy: "",
   });
 
   const [categories, setCategories] = useState([]);
@@ -112,28 +110,38 @@ const ProductsTable = ({
       result = result.filter((p) => p.subCategory === filters.subCategory);
     }
 
-    if (filters.priceSort) {
-      result.sort((a, b) =>
-        filters.priceSort === "lowToHigh"
-          ? a.price - b.price
-          : b.price - a.price
-      );
-    }
-
-    if (filters.dateSort) {
-      result.sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
-        return filters.dateSort === "newest" ? dateB - dateA : dateA - dateB;
-      });
-    }
-
-    if (filters.nameSort) {
-      result.sort((a, b) =>
-        filters.nameSort === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name)
-      );
+    // Apply combined sorting based on the selected option
+    if (filters.sortBy) {
+      switch (filters.sortBy) {
+        case "price_lowToHigh":
+          result.sort((a, b) => a.price - b.price);
+          break;
+        case "price_highToLow":
+          result.sort((a, b) => b.price - a.price);
+          break;
+        case "date_newest":
+          result.sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return dateB - dateA;
+          });
+          break;
+        case "date_oldest":
+          result.sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return dateA - dateB;
+          });
+          break;
+        case "name_asc":
+          result.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "name_desc":
+          result.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        default:
+          break;
+      }
     }
 
     setFilteredProducts(result);
@@ -143,9 +151,7 @@ const ProductsTable = ({
     setFilters({
       category: "",
       subCategory: "",
-      priceSort: "",
-      dateSort: "",
-      nameSort: "",
+      sortBy: "",
     });
     setSearchText("");
   };
@@ -186,6 +192,14 @@ const ProductsTable = ({
       dataIndex: "quantity",
       key: "quantity",
       align: "center", // Center the content
+      render: (quantity) => (
+        <span>
+          {quantity}
+          {quantity <= 5 && (
+            <span style={{  marginLeft: 4 }}>Low Quantity</span>
+          )}
+        </span>
+      ),
     },
     {
       title: "Actions",
@@ -220,31 +234,32 @@ const ProductsTable = ({
     },
   ];
 
-
+  // Function to apply the red row style if quantity is 10 or less
+  const rowClassName = (record) => {
+    return record.quantity <= 5 ? "red-row" : "";
+  };
 
   return (
     <div className="product-table">
       <div className="filters-section">
-        <Divider />
-
         <div className="filter-controls mb-6">
           <Space wrap>
-            <Search
+            <Input
               placeholder="Search products by name"
               value={searchText}
               onChange={handleInputChange}
-              style={{ width: 300 }}
+              style={{ width: 300, height: 40 }}
             />
 
             <Select
               placeholder="Category"
-              style={{ width: 200 }}
+              style={{ width: 200, height: 40 }}
               value={filters.category || undefined}
               onChange={(value) =>
                 setFilters({
                   ...filters,
                   category: value,
-                  subCategory: "", // reset subcategory when category changes
+                  subCategory: "",
                 })
               }
               allowClear
@@ -258,7 +273,7 @@ const ProductsTable = ({
 
             <Select
               placeholder="Sub Category"
-              style={{ width: 200 }}
+              style={{ width: 200, height: 40 }}
               value={filters.subCategory || undefined}
               onChange={(value) =>
                 setFilters({ ...filters, subCategory: value })
@@ -274,39 +289,21 @@ const ProductsTable = ({
             </Select>
 
             <Select
-              placeholder="Price"
-              style={{ width: 200 }}
-              value={filters.priceSort || undefined}
-              onChange={(value) => setFilters({ ...filters, priceSort: value })}
+              placeholder="Sort By"
+              style={{ width: 200, height: 40 }}
+              value={filters.sortBy || undefined}
+              onChange={(value) => setFilters({ ...filters, sortBy: value })}
               allowClear
             >
-              <Option value="lowToHigh">Price: Low to High</Option>
-              <Option value="highToLow">Price: High to Low</Option>
+              <Option value="price_lowToHigh">Price: Low to High</Option>
+              <Option value="price_highToLow">Price: High to Low</Option>
+              <Option value="date_newest">Date: Newest First</Option>
+              <Option value="date_oldest">Date: Oldest First</Option>
+              <Option value="name_asc">Name: A to Z</Option>
+              <Option value="name_desc">Name: Z to A</Option>
             </Select>
 
-            <Select
-              placeholder="Date"
-              style={{ width: 200 }}
-              value={filters.dateSort || undefined}
-              onChange={(value) => setFilters({ ...filters, dateSort: value })}
-              allowClear
-            >
-              <Option value="newest">Newest First</Option>
-              <Option value="oldest">Oldest First</Option>
-            </Select>
-
-            <Select
-              placeholder="Name"
-              style={{ width: 200 }}
-              value={filters.nameSort || undefined}
-              onChange={(value) => setFilters({ ...filters, nameSort: value })}
-              allowClear
-            >
-              <Option value="asc">Name: A to Z</Option>
-              <Option value="desc">Name: Z to A</Option>
-            </Select>
-
-            <Button onClick={resetFilters} style={{ width: 140 }}>
+            <Button onClick={resetFilters} style={{ width: 200, height: 40 }}>
               Reset Filters
             </Button>
           </Space>
@@ -320,6 +317,7 @@ const ProductsTable = ({
         loading={loading}
         pagination={{ pageSize: 12 }}
         size="small"
+        rowClassName={rowClassName} // Apply the row style
       />
     </div>
   );

@@ -175,13 +175,12 @@ const UserProfile = () => {
                 height: "45px",
                 backgroundColor: "#f7f7f7",
                 borderRadius: "8px",
-                border: "1px solid #E0E4EC",
                 outline: "none",
               }}
             />
           </Form.Item>
 
-          {/* Email */}
+          {/* Email (Disabled) */}
           <Form.Item
             name="email"
             label="Email"
@@ -200,6 +199,7 @@ const UserProfile = () => {
                 border: "1px solid #E0E4EC",
                 outline: "none",
               }}
+              disabled // Disable the email field
             />
           </Form.Item>
 
@@ -216,7 +216,6 @@ const UserProfile = () => {
                 height: "45px",
                 backgroundColor: "#f7f7f7",
                 borderRadius: "8px",
-                border: "1px solid #E0E4EC",
                 outline: "none",
               }}
             />
@@ -235,7 +234,7 @@ const UserProfile = () => {
                 height: "45px",
                 backgroundColor: "#f7f7f7",
                 borderRadius: "8px",
-                border: "1px solid #E0E4EC",
+                border: "1px solid #E0E4EC", // Custom border for language
               }}
             >
               <Option value="english">English</Option>
@@ -243,8 +242,6 @@ const UserProfile = () => {
               <Option value="spanish">Spanish</Option>
             </Select>
           </Form.Item>
-
-     
 
           {/* Update Profile Button */}
           <div className="col-span-2 text-end mt-6">

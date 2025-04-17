@@ -4,26 +4,28 @@ import { PlusOutlined } from "@ant-design/icons";
 import ProductsTable from "./ProductsTable";
 import ProductFormModal from "./ProductFormModal";
 import ProductDetailModal from "./ProductDetails";
+import GradientButton from "../common/GradiantButton";
 
 const dummyProducts = [
   {
-    id: 1,
-    name: "Smartphone X Pro",
-    category: "Electronics",
-    subCategory: "Mobile Phones",
-    description: "High-end smartphone with advanced camera features",
-    price: 45000,
-    quantity: 25,
-    quality: "Premium",
-    images: [
-      "https://picsum.photos/id/1/800/800",
-      "https://picsum.photos/id/20/800/800",
-      "https://picsum.photos/id/1/800/800",
-      "https://picsum.photos/id/20/800/800",
-    ],
-    createdAt: "2023-06-15T08:30:00Z",
-    updatedAt: "2023-12-10T14:45:00Z",
-  },
+  "id": 1,
+  "name": "Smartphone X Pro",
+  "category": "Electronics",
+  "subCategory": "Mobile Phones",
+  "description": "The Smartphone X Pro is a revolutionary mobile device designed to meet the needs of users who demand the very best in performance, design, and innovation. As a part of the Electronics category and specifically within the Mobile Phones subcategory, this smartphone delivers a premium experience with cutting-edge technology and state-of-the-art features.\n\nAt its core, the Smartphone X Pro is powered by a high-performance processor, ensuring that every task – from gaming to multitasking – is handled effortlessly. Whether you’re browsing the web, streaming media, or working on high-intensity applications, the device operates with smooth efficiency. Equipped with 5G connectivity, the Smartphone X Pro ensures lightning-fast download and upload speeds, allowing users to experience seamless connectivity and responsiveness.\n\nOne of the most standout features of the Smartphone X Pro is its advanced camera system. The smartphone boasts a high-resolution main camera with multi-lens capabilities, including ultra-wide and telephoto lenses that offer exceptional versatility in capturing all types of images. Whether you're capturing expansive landscapes, close-up details, or vibrant portraits, the camera provides stunning clarity and detail. Additionally, the front-facing camera is perfect for selfies and video calls, making sure you always look your best.\n\nThe OLED display brings vibrant, true-to-life colors and deep contrasts, delivering an immersive viewing experience whether you’re watching videos, playing games, or browsing through photos. With a premium build and high-quality materials, the Smartphone X Pro feels luxurious in hand while remaining durable for daily use.\n\nThe long-lasting battery ensures that you can stay productive and entertained throughout the day. And with fast-charging capabilities, you won’t be waiting long to get back to full power. Whether for work, play, or content creation, the Smartphone X Pro is the perfect choice for those who demand the best.",
+  "price": 45000,
+  "quantity": 25,
+  "quality": "Premium",
+  "images": [
+    "https://picsum.photos/id/1/800/800",
+    "https://picsum.photos/id/20/800/800",
+    "https://picsum.photos/id/1/800/800",
+    "https://picsum.photos/id/20/800/800"
+  ],
+  "createdAt": "2023-06-15T08:30:00Z",
+  "updatedAt": "2023-12-10T14:45:00Z"
+},
+
   {
     id: 2,
     name: "Leather Jacket",
@@ -109,7 +111,7 @@ const dummyProducts = [
     subCategory: "Dining Room",
     description: "6-seater dining table set with chairs",
     price: 15500,
-    quantity: 4,
+    quantity: 24,
     quality: "Premium",
     images: ["https://picsum.photos/id/42/800/800"],
     createdAt: "2023-12-01T11:50:00Z",
@@ -266,10 +268,15 @@ const ProductManagement = () => {
           marginBottom: 16,
         }}
       >
-        <h1>Products Management</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAddNew}>
+        <h1 className="text-2xl font-bold">Products Management</h1>
+        <GradientButton
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleAddNew}
+        >
+          <PlusOutlined />
           Add New Product
-        </Button>
+        </GradientButton>
       </div>
 
       <ProductsTable
