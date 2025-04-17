@@ -6,7 +6,7 @@ const SaleRepsManagement = () => {
   return (
     <div>
         {/* <SalesRepsCard /> */}
-        <SalesCardInfo />
+        {/* <SalesCardInfo /> */}
       <SalesRepsManagementTable />
     </div>
   )

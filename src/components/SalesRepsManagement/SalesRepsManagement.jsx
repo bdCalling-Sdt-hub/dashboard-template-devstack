@@ -26,6 +26,26 @@ const SalesRepsManagementTable = () => {
       commission: "$250",
       status: "Inactive",
     },
+    {
+      id: 3,
+      name: "Alice Khan",
+      image: "https://i.ibb.co.com/8gh3mqPR/Ellipse-48-1.jpg",
+      email: "example@email.com",
+      retailer: 5,
+      sales: "$300",
+      commission: "$200",
+      status: "Active",
+    },
+    {
+      id: 4,
+      name: "Jayson Roy",
+      image: "https://i.ibb.co.com/8gh3mqPR/Ellipse-48-1.jpg",
+      email: "john@email.com",
+      retailer: 3,
+      sales: "$500",
+      commission: "$250",
+      status: "Inactive",
+    },
     // ... rest of your data
   ]);
 
@@ -157,17 +177,17 @@ const SalesRepsManagementTable = () => {
       {/* tops of tables  */}
       <div className="flex justify-between items-center mb-6 ">
         <div>
-          <h1 className="text-2xl font-bold">All Sales Reps</h1>
+          <h1 className="text-2xl font-bold">All Sales Reps ({data.length})</h1>
         </div>
         <div className="flex gap-5 items-center">
           <div>
-            <Button
+            {/* <Button
               type="primary"
               onClick={handleOpen}
               className="bg-gradient-to-r from-primary  to-secondary py-5 font-bold"
             >
-              Accept Sales Rep. (01)
-            </Button>
+              Accept Sales Reps 
+            </Button> */}
 
             <Modal
               title="Accept Sales Rep"

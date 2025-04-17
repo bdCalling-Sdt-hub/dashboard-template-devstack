@@ -130,6 +130,10 @@ const UserProfile = () => {
     return isImage && isLessThan2MB;
   };
 
+  const handleFormSubmit = () => {
+    form.submit(); // This will trigger the onFinish function
+  };
+
   return (
     <div className="flex justify-center items-center">
       <Form
@@ -246,9 +250,17 @@ const UserProfile = () => {
           {/* Update Profile Button */}
           <div className="col-span-2 text-end mt-6">
             <Form.Item>
-              <GradientButton htmlType="submit" block>
+              {/* Option 1: Use standard Ant Design Button */}
+              <Button type="primary" htmlType="submit" block style={{height:40}}>
+                Update Profile
+              </Button>
+
+              {/* Option 2: Use GradientButton with onClick handler */}
+              {/* 
+              <GradientButton onClick={handleFormSubmit} block>
                 Update Profile
               </GradientButton>
+              */}
             </Form.Item>
           </div>
         </div>

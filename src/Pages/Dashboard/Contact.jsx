@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button, Flex } from "antd";
+import { Modal, Form, Input, Button, Flex, message } from "antd";
 import { LiaPhoneVolumeSolid } from "react-icons/lia";
 import { PiMapPinAreaLight } from "react-icons/pi";
 import { CiMail } from "react-icons/ci";
@@ -7,17 +7,15 @@ import GradientButton from "../../components/common/GradiantButton";
 
 const Contact = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [contactInfo, setContactInfo] = useState({
     phone: "(+62) 8896-2220 | (021) 111 444 90",
     email: "demo@gmail.com",
     location: "Jl. Merdeka Raya No.73B, Kuta, Badung, Bali",
   });
-
-  const [editedContact, setEditedContact] = useState({ ...contactInfo });
+  const [form] = Form.useForm();
 
   const showModal = () => {
-    setEditedContact({ ...contactInfo }); // Reset edits to original contact info
+    form.setFieldsValue(contactInfo);
     setIsModalOpen(true);
   };
 
@@ -25,26 +23,10 @@ const Contact = () => {
     setIsModalOpen(false);
   };
 
-  const handleUpdate = () => {
-    // Trim everything after the domain part (e.g., ".com", ".org")
-    const trimmedEmail = editedContact.email.replace(
-      /(\.com|\.org|\.net|\.edu)(.*)$/,
-      "$1"
-    );
-
-    // Update the contact info with the trimmed email
-    setContactInfo({ ...editedContact, email: trimmedEmail }); // Update the main contact info
+  const handleUpdate = (values) => {
+    setContactInfo(values);
     setIsModalOpen(false);
-  };
-
-  const handleChange = (key, value) => {
-    setEditedContact((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const validateEmail = (email) => {
-    // Basic email validation regex
-    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return regex.test(email);
+    message.success("Contact information updated successfully!");
   };
 
   const contactFields = [
@@ -54,10 +36,12 @@ const Contact = () => {
   ];
 
   return (
-    <div className="py-5 mx-auto">
-      <h1 className="text-3xl font-bold mb-10 text-center">Contact</h1>
+    <div className="p-6 rounded-lg bg-gradient-to-r from-primary to-secondary">
+      <h1 className="text-3xl font-bold text-white mb-10 text-center">
+        Contact
+      </h1>
       <Flex vertical justify="center" gap={30} className="w-full">
-        <div className="flex items-center justify-normal bg-white p-12 w-4/5 mx-auto gap-4 rounded-xl ">
+        <div className="flex items-center justify-normal bg-white p-12 w-4/5 mx-auto gap-4 rounded-xl">
           {[
             {
               icon: <LiaPhoneVolumeSolid size={50} />,
@@ -95,7 +79,6 @@ const Contact = () => {
         <button
           onClick={showModal}
           className="w-3/6 h-12 mx-auto rounded-lg text-white border bg-primary border-1 border-smart text-smart font-bold tracking-wider hover:bg-secondary hover:text-white hover:transition-all duration-500"
-       
         >
           Edit Info
         </button>
@@ -106,14 +89,15 @@ const Contact = () => {
         title="Edit Contact"
         open={isModalOpen}
         onCancel={handleCancel}
-        footer={false}
+        footer={null}
         centered
       >
         <div className="py-5">
           <Form
+            form={form}
             layout="vertical"
             onFinish={handleUpdate}
-            initialValues={editedContact}
+            initialValues={contactInfo}
           >
             {contactFields.map((field, i) => (
               <Form.Item
@@ -136,19 +120,15 @@ const Contact = () => {
                   type={field.type}
                   placeholder={`Enter your ${field.label.toLowerCase()}`}
                   className="h-12 rounded-xl"
-                  value={editedContact[field.key]}
-                  onChange={(e) => handleChange(field.key, e.target.value)}
                 />
               </Form.Item>
             ))}
 
             <div className="flex justify-end gap-4">
-              <GradientButton actionType="cancel" onClick={handleCancel}>
-                Cancel
-              </GradientButton>
-              <GradientButton actionType="update" htmlType="submit">
+              <Button onClick={handleCancel}>Cancel</Button>
+              <Button type="primary" htmlType="submit">
                 Update
-              </GradientButton>
+              </Button>
             </div>
           </Form>
         </div>

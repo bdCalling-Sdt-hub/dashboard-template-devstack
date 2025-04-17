@@ -32,7 +32,7 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 12,
     total: 0,
   });
 
@@ -112,6 +112,7 @@ const UserManagement = () => {
       dataIndex: "id",
       key: "id",
       width: 80,
+      align: "center",
       render: (text, record, index) => {
         return (pagination.current - 1) * pagination.pageSize + index + 1;
       },
@@ -120,27 +121,32 @@ const UserManagement = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      align: "center",
     },
     {
       title: "Phone",
       dataIndex: "phone",
       key: "phone",
+      align: "center",
     },
     {
       title: "Address",
       dataIndex: "address",
       key: "address",
+      align: "center",
       ellipsis: true,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      align: "center",
       render: (status) => {
         let color = "blue";
         if (status === "admin") color = "red";
@@ -151,6 +157,7 @@ const UserManagement = () => {
     {
       title: "Actions",
       key: "actions",
+      align: "center",
       render: (_, record) => (
         <Space>
           <Button
@@ -177,7 +184,7 @@ const UserManagement = () => {
 
   return (
     <div>
-      <Card>
+      
         <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
           <Title level={4} className="m-0">
             User Management
@@ -187,7 +194,7 @@ const UserManagement = () => {
             <Input
               placeholder="Search by name or email"
               prefix={<SearchOutlined />}
-              style={{ width: 250 }}
+              style={{ width: 250 , height:40}}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               allowClear
@@ -197,7 +204,7 @@ const UserManagement = () => {
               placeholder="Filter by status"
               value={statusFilter}
               onChange={(value) => setStatusFilter(value)}
-              style={{ width: 150 }}
+              style={{ width: 150, height:40 }}
               suffixIcon={<FilterOutlined />}
             >
               <Option value="all">All Users</Option>
@@ -208,15 +215,18 @@ const UserManagement = () => {
           </Space>
         </div>
 
-        <Table
-          columns={columns}
-          dataSource={getProcessedUsers()}
-          rowKey="id"
-          pagination={pagination}
-          onChange={handleTableChange}
+        <div className="px-6 pt-6 rounded-lg bg-gradient-to-r from-primary to-secondary">
+          <Table
+            columns={columns}
+            dataSource={getProcessedUsers()}
+            rowKey="id"
+            pagination={pagination}
+            onChange={handleTableChange}
           loading={loading}
-        />
-      </Card>
+          size="small"
+          />
+        </div>
+  
     </div>
   );
 };

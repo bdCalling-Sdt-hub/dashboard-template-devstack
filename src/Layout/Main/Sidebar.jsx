@@ -219,7 +219,7 @@ const Sidebar = () => {
           className="font-poppins text-black sidebar-menu"
           style={{
             // borderRightColor: "transparent",
-            background: "#FAF2DF",
+            background: "#fff",
           }}
           items={menuItems.map((item) => ({
             ...item,

@@ -310,15 +310,17 @@ const ProductsTable = ({
         </div>
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={filteredProducts}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 12 }}
-        size="small"
-        rowClassName={rowClassName} // Apply the row style
-      />
+      <div className="px-6 pt-6 rounded-lg bg-gradient-to-r from-primary to-secondary">
+        <Table
+          columns={columns}
+          dataSource={filteredProducts}
+          rowKey="id"
+          loading={loading}
+          pagination={{ pageSize: 12 }}
+          size="small"
+          rowClassName={rowClassName} // Apply the row style
+        />
+      </div>
     </div>
   );
 };

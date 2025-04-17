@@ -25,7 +25,6 @@ import SalesManagement from "../Pages/Dashboard/SalesManagement";
 import Retailer from "../Pages/Dashboard/Retailer";
 import SaleRepsManagement from "../Pages/Dashboard/SaleRepsManagement";
 import ViewSalesReps from "../components/SalesRepsManagement/detailsSalesReps/ViewSalesReps";
-import Products from "../Pages/Dashboard/Products";
 import LoyaltyProgram from "../Pages/Dashboard/LoyaltyProgram";
 import SubscriptionTable from "../components/subscriber/SubscriberTable";
 import OrderManagementContainer from "../components/orderMangement/OrderManagementContainer";
@@ -64,10 +63,6 @@ const router = createBrowserRouter([
       {
         path: "/salesRepsManage",
         element: <SaleRepsManagement />,
-      },
-      {
-        path: "/inventory",
-        element: <Products />,
       },
       {
         path: "/salesRepsManage/:id",

@@ -92,7 +92,6 @@ const CategoryManagement = () => {
   // Add or update a category
   const handleCategorySave = (values) => {
     if (editingId !== null) {
-      // Edit existing category
       setCategories(
         categories.map((category) =>
           category.id === editingId
@@ -120,7 +119,6 @@ const CategoryManagement = () => {
 
   // Delete a category
   const handleCategoryDelete = (id) => {
-    // Delete the category
     setCategories(categories.filter((category) => category.id !== id));
     message.success("Category deleted successfully");
   };
@@ -170,8 +168,6 @@ const CategoryManagement = () => {
     }
 
     if (file.status === "done") {
-      // In a real app, you would get the URL from the server response
-      // For now, we'll simulate with a placeholder
       const uploadedImageUrl = URL.createObjectURL(file.originFileObj);
       setImageUrl(uploadedImageUrl);
       message.success(`${file.name} uploaded successfully`);
