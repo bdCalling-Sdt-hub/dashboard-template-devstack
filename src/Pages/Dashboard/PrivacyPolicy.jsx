@@ -8,15 +8,16 @@ const PrivacyPolicy = () => {
 
   // Using a single state for both content and saved content
   const [termsContent, setTermsContent] = useState(`
-    <h2>Privacy Policy</h2>
+    <h2><strong>Privacy Policy</strong></h2>
     <p>Welcome to our website. If you continue to browse and use this website, you are agreeing to comply with and be bound by the following terms and conditions of use.</p>
-    <h3>1. General Terms</h3>
+    <h3><strong><em>1. General Terms</em></strong></h3>
     <p>The content of the pages of this website is for your general information and use only. It is subject to change without notice.</p>
-    <h3>2. Privacy Policy</h3>
+    <h3><strong><em>2. Privacy Policy</em></strong></h3>
     <p>Your use of this website is also subject to our Privacy Policy, which is incorporated by reference.</p>
-    <h3>3. Disclaimer</h3>
+    <h3><strong><em>3. Disclaimer</em></strong></h3>
     <p>The information contained in this website is for general information purposes only. We endeavor to keep the information up to date and correct.</p>
-  `);
+`);
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
