@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Table, Input, Select, Button, Space, Tooltip, Divider } from "antd";
+import { Table, Input, Select, Button, Space, Tooltip, Badge, Tag } from "antd";
 import {
   SearchOutlined,
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  FileTextOutlined,
+  PlusCircleOutlined,
 } from "@ant-design/icons";
 import debounce from "lodash/debounce";
 
 const { Option } = Select;
-const { Search } = Input;
 
 const ProductsTable = ({
   products,
@@ -17,6 +18,8 @@ const ProductsTable = ({
   onEdit,
   onDelete,
   onViewDetails,
+  onEditInfo,
+  onAddInfo,
 }) => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -93,6 +96,24 @@ const ProductsTable = ({
     debouncedSuggestion(value);
   };
 
+  const calculateTotalQuantity = (variants) => {
+    return variants.reduce((total, variant) => total + variant.quantity, 0);
+  };
+
+  const calculatePriceRange = (variants) => {
+    if (!variants || variants.length === 0) return "N/A";
+
+    const prices = variants.map((v) => v.price);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    if (minPrice === maxPrice) {
+      return `${minPrice}`;
+    }
+
+    return `${minPrice} - ${maxPrice}`;
+  };
+
   const applyFilters = () => {
     let result = [...products];
 
@@ -114,10 +135,18 @@ const ProductsTable = ({
     if (filters.sortBy) {
       switch (filters.sortBy) {
         case "price_lowToHigh":
-          result.sort((a, b) => a.price - b.price);
+          result.sort((a, b) => {
+            const minPriceA = Math.min(...a.variants.map((v) => v.price));
+            const minPriceB = Math.min(...b.variants.map((v) => v.price));
+            return minPriceA - minPriceB;
+          });
           break;
         case "price_highToLow":
-          result.sort((a, b) => b.price - a.price);
+          result.sort((a, b) => {
+            const maxPriceA = Math.max(...a.variants.map((v) => v.price));
+            const maxPriceB = Math.max(...b.variants.map((v) => v.price));
+            return maxPriceB - maxPriceA;
+          });
           break;
         case "date_newest":
           result.sort((a, b) => {
@@ -156,69 +185,132 @@ const ProductsTable = ({
     setSearchText("");
   };
 
+  const hasProductInfo = (product) => {
+    return (
+      (product.description && product.description.length > 0) ||
+      (product.faq && product.faq.length > 0)
+    );
+  };
+
   const columns = [
     {
       title: "Serial No.",
       key: "serial",
-      render: (_, __, index) => index + 1, // Adding serial number based on the row index
-      align: "center", // Center the serial number
+      render: (_, __, index) => index + 1,
+      align: "center",
+      width: 80,
     },
     {
       title: "Product Name",
       dataIndex: "name",
       key: "name",
-      align: "center", // Center the content
+      align: "center",
     },
     {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      align: "center", // Center the content
+      align: "center",
     },
     {
       title: "Sub Category",
       dataIndex: "subCategory",
       key: "subCategory",
-      align: "center", // Center the content
+      align: "center",
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-      align: "center", // Center the content
+      title: "Quality",
+      dataIndex: "quality",
+      key: "quality",
+      align: "center",
     },
     {
-      title: "Quantity",
-      dataIndex: "quantity",
-      key: "quantity",
-      align: "center", // Center the content
-      render: (quantity) => (
-        <span>
-          {quantity}
-          {quantity <= 5 && (
-            <span style={{  marginLeft: 4 }}>Low Quantity</span>
-          )}
-        </span>
+      title: "Variants",
+      key: "variants",
+      align: "center",
+      render: (_, record) => (
+        <span>{record.variants ? record.variants.length : 0}</span>
       ),
     },
     {
+      title: "Price Range",
+      key: "priceRange",
+      align: "center",
+      render: (_, record) => calculatePriceRange(record.variants),
+    },
+    {
+      title: "Total Quantity",
+      key: "totalQuantity",
+      align: "center",
+      render: (_, record) => {
+        const totalQty = calculateTotalQuantity(record.variants);
+        return (
+          <span>
+            {totalQty}
+            {totalQty <= 10 && (
+              <span style={{ color: "red", marginLeft: 4 }}>Low Stock</span>
+            )}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Product info",
+      key: "actions",
+      align: "center",
+      width: 80,
+      render: (_, record) => (
+        <Space size="small">
+          {hasProductInfo(record) ? (
+            <Tooltip title="Edit Info">
+              <Button
+                icon={<FileTextOutlined />}
+                onClick={() => onEditInfo(record)}
+                type="default"
+                className="bg-primary text-white"
+              >
+                Edit Info
+              </Button>
+            </Tooltip>
+          ) : (
+            <Tooltip title="Add Info">
+              <Button
+                icon={<PlusCircleOutlined />}
+                onClick={() => onAddInfo(record)}
+                type="default"
+                className="bg-secondary text-white"
+              >
+                Add Info
+              </Button>
+            </Tooltip>
+          )}
+        </Space>
+      ),
+    },
+
+    {
       title: "Actions",
       key: "actions",
-      align: "center", // Center the content
+      align: "center",
+      width: 280,
       render: (_, record) => (
         <Space size="middle">
+          {" "}
+          {/* You can change 'middle' to 'large' or 'small' depending on the desired gap */}
           <Tooltip title="View Details">
             <Button
               icon={<EyeOutlined />}
               onClick={() => onViewDetails(record)}
               type="default"
+              size="small"
             />
           </Tooltip>
-          <Tooltip title="Edit">
+          <Tooltip title="Edit Product">
             <Button
               icon={<EditOutlined />}
               onClick={() => onEdit(record)}
               type="primary"
+              size="small"
             />
           </Tooltip>
           <Tooltip title="Delete">
@@ -227,6 +319,7 @@ const ProductsTable = ({
               onClick={() => onDelete(record.id)}
               type="danger"
               className="bg-red-500 text-white"
+              size="small"
             />
           </Tooltip>
         </Space>
@@ -234,9 +327,10 @@ const ProductsTable = ({
     },
   ];
 
-  // Function to apply the red row style if quantity is 10 or less
+  // Function to apply the red row style if any variant has low quantity
   const rowClassName = (record) => {
-    return record.quantity <= 5 ? "red-row" : "";
+    const hasLowStock = record.variants.some((v) => v.quantity <= 5);
+    return hasLowStock ? "red-row" : "";
   };
 
   return (
@@ -316,9 +410,9 @@ const ProductsTable = ({
           dataSource={filteredProducts}
           rowKey="id"
           loading={loading}
-          pagination={{ pageSize: 12 }}
+          pagination={{ pageSize: 10 }}
           size="small"
-          rowClassName={rowClassName} // Apply the row style
+          // rowClassName={rowClassName}
         />
       </div>
     </div>

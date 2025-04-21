@@ -11,8 +11,18 @@ import {
   Row,
   Col,
   Typography,
+  Table,
+  Space,
+  Card,
+  Divider,
+  Tooltip,
 } from "antd";
-import { PlusOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  LoadingOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -54,14 +64,34 @@ const getBase64 = (file) =>
     reader.onerror = (error) => reject(error);
   });
 
+// Available sizes
+const sizeOptions = ["S", "M", "L", "XL", "XXL"];
+
+// Common colors with hex values
+const colorOptions = [
+  { name: "White", value: "#ffffff" },
+  { name: "Black", value: "#000000" },
+  { name: "Primary", value: "#6200EE" },
+  { name: "Red", value: "#ff0000" },
+  { name: "Green", value: "#00ff00" },
+  { name: "Blue", value: "#0000ff" },
+  { name: "Yellow", value: "#ffff00" },
+  { name: "Purple", value: "#800080" },
+  { name: "Gray", value: "#808080" },
+  { name: "Brown", value: "#a52a2a" },
+];
+
 const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState([]);
+  const [variantForm] = Form.useForm();
+  const [variants, setVariants] = useState([]);
+  const [editingVariant, setEditingVariant] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+  const [variantFileList, setVariantFileList] = useState([]);
 
   useEffect(() => {
     if (visible) {
@@ -71,30 +101,36 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
           name: product.name,
           category: product.category,
           subCategory: product.subCategory,
-          description: product.description,
-          price: product.price,
-          quantity: product.quantity,
           quality: product.quality,
         });
 
         setSelectedCategory(product.category);
 
-        // Convert existing images to fileList format
-        if (product.images && product.images.length) {
-          const images = product.images.map((img, index) => ({
-            uid: `-${index}`,
-            name: `image-${index}`,
-            status: "done",
-            url: img,
-          }));
-          setFileList(images);
+        // Set variants if they exist
+        if (product.variants && product.variants.length) {
+          setVariants(product.variants);
         } else {
-          setFileList([]);
+          // No variants - create default from main product data
+          if (product.price !== undefined && product.quantity !== undefined) {
+            setVariants([
+              {
+                id: Date.now(),
+                size: "M",
+                color: "#000000",
+                colorName: "Black",
+                price: product.price,
+                quantity: product.quantity,
+                images: product.images || [],
+              },
+            ]);
+          } else {
+            setVariants([]);
+          }
         }
       } else {
         // Reset form for add mode
         form.resetFields();
-        setFileList([]);
+        setVariants([]);
         setSelectedCategory("");
       }
     }
@@ -110,7 +146,7 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
   );
 
   const handleUploadChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+    setVariantFileList(newFileList);
   };
 
   const handlePreview = async (file) => {
@@ -135,12 +171,12 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
     </div>
   );
 
-  const handleSubmit = async () => {
+  const handleAddVariant = async () => {
     try {
-      const values = await form.validateFields();
+      const values = await variantForm.validateFields();
 
-      // Prepare images data for submission
-      const images = fileList
+      // Process images
+      const images = variantFileList
         .map((file) => {
           if (file.originFileObj) {
             // For demo, we'll just use a placeholder URL
@@ -148,14 +184,188 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
               Math.random() * 100
             )}/800/800`;
           } else if (file.url) {
-            // This is an existing image
             return file.url;
           }
           return null;
         })
         .filter(Boolean);
 
-      onSave({ ...values, images });
+      // Find the selected color name
+      const selectedColor = colorOptions.find(
+        (color) => color.value === values.color
+      );
+      const colorName = selectedColor ? selectedColor.name : "Custom";
+
+      const newVariant = {
+        id: editingVariant ? editingVariant.id : Date.now(),
+        size: values.size,
+        color: values.color,
+        colorName: colorName,
+        price: values.price,
+        quantity: values.quantity,
+        images: images,
+      };
+
+      if (editingVariant) {
+        // Update existing variant
+        setVariants(
+          variants.map((v) => (v.id === editingVariant.id ? newVariant : v))
+        );
+      } else {
+        // Add new variant
+        setVariants([...variants, newVariant]);
+      }
+
+      // Reset form and state
+      variantForm.resetFields();
+      setVariantFileList([]);
+      setEditingVariant(null);
+
+      message.success(
+        `Variant ${editingVariant ? "updated" : "added"} successfully`
+      );
+    } catch (error) {
+      console.error("Validation failed:", error);
+    }
+  };
+
+  const handleEditVariant = (variant) => {
+    setEditingVariant(variant);
+
+    // Set form values
+    variantForm.setFieldsValue({
+      size: variant.size,
+      color: variant.color,
+      price: variant.price,
+      quantity: variant.quantity,
+    });
+
+    // Set file list from images
+    if (variant.images && variant.images.length) {
+      const files = variant.images.map((img, index) => ({
+        uid: `-${index}`,
+        name: `image-${index}`,
+        status: "done",
+        url: img,
+      }));
+      setVariantFileList(files);
+    } else {
+      setVariantFileList([]);
+    }
+  };
+
+  const handleDeleteVariant = (variantId) => {
+    setVariants(variants.filter((v) => v.id !== variantId));
+    message.success("Variant deleted successfully");
+  };
+
+  const resetVariantForm = () => {
+    variantForm.resetFields();
+    setVariantFileList([]);
+    setEditingVariant(null);
+  };
+
+  const columns = [
+    {
+      title: "Size",
+      dataIndex: "size",
+      key: "size",
+      align: "center",
+    },
+    {
+      title: "Color",
+      key: "color",
+      align: "center",
+      render: (_, record) => (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              width: 24,
+              height: 24,
+              backgroundColor: record.color,
+              border: "1px solid #d9d9d9",
+              marginRight: 8,
+              borderRadius: 4,
+            }}
+          />
+          {record.colorName}
+        </div>
+      ),
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      align: "center",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center",
+    },
+    {
+      title: "Images",
+      key: "images",
+      align: "center",
+      render: (_, record) => (
+        <span>{record.images ? record.images.length : 0} images</span>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      align: "center",
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => handleEditVariant(record)}
+            type="primary"
+            size="small"
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={() => handleDeleteVariant(record.id)}
+            type="primary"
+            danger
+            size="small"
+          />
+        </Space>
+      ),
+    },
+  ];
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+
+      if (variants.length === 0) {
+        message.error("Please add at least one variant");
+        return;
+      }
+
+      // Combine basic product info with variants
+      const productData = {
+        ...values,
+        variants: variants,
+        // Use first variant's data for legacy fields
+        price: variants[0].price,
+        quantity: variants[0].quantity,
+        images: variants[0].images,
+        description: "",
+        faq: [],
+        hasFaq: false,
+        hasDescription: false,
+      };
+
+      onSave(productData);
     } catch (error) {
       console.error("Validation failed:", error);
     }
@@ -168,148 +378,219 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
         open={visible}
         onCancel={onCancel}
         onOk={handleSubmit}
-        width={800}
-        okText={product ? "Update" : "Add"}
+        width={1000}
+        okText={product ? "Update Product" : "Add Product"}
         confirmLoading={uploading}
+        style={{ top: 20 }} // Optional: Adjust the modal's position
       >
-        <Form form={form} layout="vertical" name="productForm">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="name"
-                label="Product Name"
-                rules={[
-                  { required: true, message: "Please enter product name" },
-                ]}
-              >
-                <Input
-                  placeholder="Enter product name"
-                  style={{ height: 40 }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="category"
-                label="Category"
-                rules={[
-                  { required: true, message: "Please select a category" },
-                ]}
-              >
-                <Select
-                  placeholder="Select category"
-                  onChange={handleCategoryChange}
-                  style={{ height: 40 }}
+        <div style={{ maxHeight: "calc(100vh - 150px)", overflowY: "auto" }}>
+          <Form form={form} layout="vertical" name="productForm">
+            <Card title="Basic Product Information" className="mb-4">
+              <Row gutter={16}>
+                <Col span={6}>
+                  <Form.Item
+                    name="name"
+                    label="Product Name"
+                    rules={[
+                      { required: true, message: "Please enter product name" },
+                    ]}
+                  >
+                    <Input
+                      placeholder="Enter product name"
+                      style={{ height: 40 }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item
+                    name="category"
+                    label="Category"
+                    rules={[
+                      { required: true, message: "Please select a category" },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Select category"
+                      onChange={handleCategoryChange}
+                      style={{ height: 40 }}
+                    >
+                      {dummyCategories.map((cat) => (
+                        <Option key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item
+                    name="subCategory"
+                    label="Sub Category"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please select a sub category",
+                      },
+                    ]}
+                  >
+                    <Select
+                      placeholder="Select sub category"
+                      disabled={!selectedCategory}
+                      style={{ height: 40 }}
+                    >
+                      {filteredSubCategories.map((subCat) => (
+                        <Option key={subCat.id} value={subCat.name}>
+                          {subCat.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item
+                    name="quality"
+                    label="Quality"
+                    rules={[
+                      { required: true, message: "Please select quality" },
+                    ]}
+                  >
+                    <Select placeholder="Select quality" style={{ height: 40 }}>
+                      <Option value="Premium">Premium</Option>
+                      <Option value="Standard">Standard</Option>
+                      <Option value="Economy">Economy</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Card>
+
+            <Card title="Product Variants" className="mb-4">
+              <Form form={variantForm} layout="vertical" name="variantForm">
+                <Row gutter={16}>
+                  <Col span={6}>
+                    <Form.Item
+                      name="size"
+                      label="Size"
+                      rules={[
+                        { required: true, message: "Please select size" },
+                      ]}
+                    >
+                      <Select placeholder="Select size" style={{ height: 40 }}>
+                        {sizeOptions.map((size) => (
+                          <Option key={size} value={size}>
+                            {size}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      name="color"
+                      label="Color"
+                      rules={[
+                        { required: true, message: "Please select color" },
+                      ]}
+                    >
+                      <Select placeholder="Select color" style={{ height: 40 }}>
+                        {colorOptions.map((color) => (
+                          <Option key={color.value} value={color.value}>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <div
+                                style={{
+                                  width: 16,
+                                  height: 16,
+                                  backgroundColor: color.value,
+                                  border: "1px solid #d9d9d9",
+                                  marginRight: 8,
+                                  borderRadius: 2,
+                                }}
+                              />
+                              {color.name}
+                            </div>
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      name="price"
+                      label="Price"
+                      rules={[
+                        { required: true, message: "Please enter price" },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        placeholder="Enter price"
+                        style={{ width: "100%", height: 40 }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={6}>
+                    <Form.Item
+                      name="quantity"
+                      label="Quantity"
+                      rules={[
+                        { required: true, message: "Please enter quantity" },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        placeholder="Enter quantity"
+                        style={{ width: "100%", height: 40 }}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item label="Variant Images">
+                  <Upload
+                    listType="picture-card"
+                    fileList={variantFileList}
+                    onPreview={handlePreview}
+                    onChange={handleUploadChange}
+                    beforeUpload={() => false} // Prevent auto upload
+                    multiple
+                  >
+                    {variantFileList.length >= 8 ? null : uploadButton}
+                  </Upload>
+                </Form.Item>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 8,
+                  }}
                 >
-                  {dummyCategories.map((cat) => (
-                    <Option key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+                  {editingVariant && (
+                    <Button onClick={resetVariantForm}>Cancel</Button>
+                  )}
+                  <Button type="primary" onClick={handleAddVariant}>
+                    {editingVariant ? "Update Variant" : "Add Variant"}
+                  </Button>
+                </div>
+              </Form>
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="subCategory"
-                label="Sub Category"
-                rules={[
-                  { required: true, message: "Please select a sub category" },
-                ]}
-              >
-                <Select
-                  placeholder="Select sub category"
-                  disabled={!selectedCategory}
-                  style={{ height: 40 }}
-                >
-                  {filteredSubCategories.map((subCat) => (
-                    <Option key={subCat.id} value={subCat.name}>
-                      {subCat.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="price"
-                label="Price"
-                rules={[
-                  { required: true, message: "Please enter product price" },
-                ]}
-              >
-                <InputNumber
-                  min={0}
-                  placeholder="Enter price"
-                  style={{ width: "100%", height: 40 }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+              <Divider />
 
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="quantity"
-                label="Quantity"
-                rules={[{ required: true, message: "Please enter quantity" }]}
-              >
-                <InputNumber
-                  min={0}
-                  placeholder="Enter quantity"
-                  style={{ width: "100%", height: 40 }}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="quality"
-                label="Quality"
-                rules={[{ required: true, message: "Please enter quality" }]}
-              >
-                <Select placeholder="Select quality" style={{ height: 40 }}>
-                  <Option value="Premium">Premium</Option>
-                  <Option value="Standard">Standard</Option>
-                  <Option value="Economy">Economy</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[
-              { required: true, message: "Please enter product description" },
-            ]}
-          >
-            <TextArea
-              rows={4}
-              placeholder="Enter product description"
-              style={{ height: 40 }}
-            />
-          </Form.Item>
-
-          <Form.Item label="Product Images" required>
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleUploadChange}
-              beforeUpload={() => false} // Prevent auto upload
-              multiple
-            >
-              {uploadButton}
-            </Upload>
-            <div className="ant-form-item-explain">
-              Upload as many product images as needed.
-            </div>
-          </Form.Item>
-        </Form>
+              <Table
+                dataSource={variants}
+                columns={columns}
+                rowKey="id"
+                pagination={false}
+                size="small"
+                bordered
+              />
+            </Card>
+          </Form>
+        </div>
       </Modal>
+
       <Modal
         open={previewOpen}
         title={previewTitle}
