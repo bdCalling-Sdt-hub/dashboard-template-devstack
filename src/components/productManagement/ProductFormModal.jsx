@@ -465,6 +465,14 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
             </Card>
 
             <Card title="Product Variants" className="mb-4">
+              <Table
+                dataSource={variants}
+                columns={columns}
+                rowKey="id"
+                pagination={false}
+                size="small"
+                bordered
+              />
               <Form form={variantForm} layout="vertical" name="variantForm">
                 <Row gutter={16}>
                   <Col span={6}>
@@ -577,15 +585,6 @@ const ProductFormModal = ({ visible, onCancel, onSave, product }) => {
               </Form>
 
               <Divider />
-
-              <Table
-                dataSource={variants}
-                columns={columns}
-                rowKey="id"
-                pagination={false}
-                size="small"
-                bordered
-              />
             </Card>
           </Form>
         </div>

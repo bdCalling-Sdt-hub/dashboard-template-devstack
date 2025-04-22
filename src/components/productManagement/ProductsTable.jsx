@@ -292,9 +292,9 @@ const ProductsTable = ({
       title: "Actions",
       key: "actions",
       align: "center",
-      width: 280,
+      width: 200,
       render: (_, record) => (
-        <Space size="middle">
+        <Space size="large">
           {" "}
           {/* You can change 'middle' to 'large' or 'small' depending on the desired gap */}
           <Tooltip title="View Details">
