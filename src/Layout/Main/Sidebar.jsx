@@ -124,10 +124,6 @@ const Sidebar = () => {
     //       key: "/category",
     //       label: <Link to="/category">Category</Link>,
     //     },
-    //     // {
-    //     //   key: "/sub-category",
-    //     //   label: <Link to="/sub-category">Sub Category</Link>,
-    //     // },
     //   ],
     // },
 
