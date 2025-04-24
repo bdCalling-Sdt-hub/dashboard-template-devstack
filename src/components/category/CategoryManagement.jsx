@@ -335,10 +335,26 @@ const CategoryManagement = () => {
           >
             <Input.TextArea rows={4} placeholder="Enter description" />
           </Form.Item>
+          {/* Replace your current Form.Item for Category Image with this */}
           <Form.Item label="Category Image" name="image">
             <Upload {...uploadProps}>
               <Button icon={<UploadOutlined />}>Upload Image</Button>
             </Upload>
+            {imageUrl && (
+              <div style={{ marginTop: 16 }}>
+                <Image
+                  src={imageUrl}
+                  alt="Preview"
+                  width={300}
+                  height={150}
+                  style={{
+                    objectFit: "contain",
+                    border: "1px solid #f0f0f0",
+                    borderRadius: "4px",
+                  }}
+                />
+              </div>
+            )}
           </Form.Item>
           {/* {imageUrl && (
             <div style={{ marginBottom: 16 }}>

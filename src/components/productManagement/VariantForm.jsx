@@ -188,7 +188,7 @@ const VariantForm = ({
               backgroundColor: record.color,
               border: "1px solid #d9d9d9",
               marginRight: 8,
-              borderRadius: 4,
+              borderRadius: 10,
             }}
           />
           {record.colorName}
@@ -377,16 +377,29 @@ const VariantForm = ({
 
         {!useSamePrice && (
           <Form.Item label="Variant Images">
-            <Upload
-              listType="picture-card"
-              fileList={variantFileList}
-              onPreview={handlePreview}
-              onChange={handleUploadChange}
-              beforeUpload={() => false} // Prevent auto upload
-              multiple
-            >
-              {variantFileList.length >= 8 ? null : uploadButton}
-            </Upload>
+            <div style={{ overflow: "auto" }}>
+              <div
+                style={{ display: "flex", flexDirection: "row", gap: "8px" }}
+              >
+                <Upload
+                  listType="picture-card"
+                  fileList={variantFileList}
+                  onPreview={handlePreview}
+                  onChange={handleUploadChange}
+                  beforeUpload={() => false}
+                  multiple
+                  itemRender={(originNode, file, currFileList) => {
+                    return (
+                      <div style={{ display: "inline-block", marginRight: 0 }}>
+                        {originNode}
+                      </div>
+                    );
+                  }}
+                >
+                  {variantFileList.length >= 8 ? null : uploadButton}
+                </Upload>
+              </div>
+            </div>
           </Form.Item>
         )}
 
@@ -398,7 +411,7 @@ const VariantForm = ({
           }}
         >
           {editingVariant && <Button onClick={resetVariantForm}>Cancel</Button>}
-          <Button type="primary" onClick={handleAddVariant} >
+          <Button type="primary" onClick={handleAddVariant}>
             {editingVariant ? "Update Variant" : "Add Variant"}
           </Button>
         </div>

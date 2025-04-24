@@ -271,7 +271,7 @@ const SubCategoryManagement = ({
       render: (imageUrl) =>
         imageUrl ? (
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <img
+            <Image
               src={imageUrl}
               alt="thumbnail"
               style={{ width: 100, height: 40 }}
