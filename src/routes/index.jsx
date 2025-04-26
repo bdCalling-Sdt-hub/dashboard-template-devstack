@@ -37,6 +37,7 @@ import PackagesPlans from "../Pages/Dashboard/Subscription";
 import SubCategoryManagement from "../Pages/Dashboard/SubCategory";
 import Contact from "../Pages/Dashboard/Contact";
 import ColorManagement from "../components/colorManage/ColorManagement";
+import SizeManagement from "../components/sizeManagement/SizeManagement";
 // import SalesRepsManagementTable from "../components/SalesRepsManagement/SalesRepsManagement";
 
 const router = createBrowserRouter([
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
       {
         path: "/color",
         element: <ColorManagement />,
+      },
+      {
+        path: "/size",
+        element: <SizeManagement />,
       },
       {
         path: "/products",

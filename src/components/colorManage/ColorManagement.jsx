@@ -1,6 +1,3 @@
-// Ant Design Color Management System
-// Uses React and Ant Design components for UI integration
-
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -24,123 +21,9 @@ import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import ColorManagementSystem from "./ColorManagementSystem";
 
-const { Title, Text } = Typography;
-
-// ColorManagementSystem class for managing color data
-class ColorManagementSystem {
-  constructor(initialColors = []) {
-    this.colors = initialColors;
-    this.nextId =
-      initialColors.length > 0
-        ? Math.max(...initialColors.map((color) => color.id)) + 1
-        : 1;
-  }
-
-  addColor(name, colorCode, isActive = true) {
-    if (!name || !colorCode) {
-      return { success: false, message: "Color name and code are required" };
-    }
-
-    const newColor = {
-      id: this.nextId++,
-      name: name,
-      colorCode: colorCode,
-      isActive: isActive,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.colors.push(newColor);
-    return {
-      success: true,
-      message: "Color added successfully",
-      color: newColor,
-    };
-  }
-
-  editColor(id, updates) {
-    const colorIndex = this.colors.findIndex((color) => color.id === id);
-
-    if (colorIndex === -1) {
-      return { success: false, message: "Color not found" };
-    }
-
-    const color = { ...this.colors[colorIndex] };
-
-    if (updates.name !== undefined) {
-      color.name = updates.name;
-    }
-
-    if (updates.colorCode !== undefined) {
-      color.colorCode = updates.colorCode;
-    }
-
-    if (updates.isActive !== undefined) {
-      color.isActive = updates.isActive;
-    }
-
-    color.updatedAt = new Date();
-    this.colors[colorIndex] = color;
-
-    return { success: true, message: "Color updated successfully", color };
-  }
-
-  deleteColor(id) {
-    const colorIndex = this.colors.findIndex((color) => color.id === id);
-
-    if (colorIndex === -1) {
-      return { success: false, message: "Color not found" };
-    }
-
-    const deletedColor = this.colors.splice(colorIndex, 1)[0];
-    return {
-      success: true,
-      message: "Color deleted successfully",
-      color: deletedColor,
-    };
-  }
-
-  getAllColors() {
-    return [...this.colors];
-  }
-
-  getActiveColors() {
-    return this.colors.filter((color) => color.isActive);
-  }
-
-  toggleColorStatus(id) {
-    const colorIndex = this.colors.findIndex((color) => color.id === id);
-
-    if (colorIndex === -1) {
-      return { success: false, message: "Color not found" };
-    }
-
-    const updatedColor = { ...this.colors[colorIndex] };
-    updatedColor.isActive = !updatedColor.isActive;
-    updatedColor.updatedAt = new Date();
-    this.colors[colorIndex] = updatedColor;
-
-    return {
-      success: true,
-      message: `Color status toggled to ${
-        updatedColor.isActive ? "active" : "inactive"
-      }`,
-      color: updatedColor,
-    };
-  }
-
-  searchColors(query) {
-    if (!query) return this.getAllColors();
-
-    query = query.toLowerCase();
-    return this.colors.filter(
-      (color) =>
-        color.name.toLowerCase().includes(query) ||
-        color.colorCode.toLowerCase().includes(query)
-    );
-  }
-}
+const { Title } = Typography;
 
 // React component for color management
 const ColorManagement = () => {
@@ -212,6 +95,7 @@ const ColorManagement = () => {
   const showAddModal = () => {
     setEditingColor(null);
     form.resetFields();
+    form.setFieldsValue({ colorCode: "#1890ff", isActive: true });
     setIsModalVisible(true);
   };
 
@@ -229,9 +113,18 @@ const ColorManagement = () => {
     form
       .validateFields()
       .then((values) => {
+        // Get form values and ensure we have the proper hex color
+        const formValues = {
+          ...values,
+          colorCode:
+            typeof values.colorCode === "object"
+              ? values.colorCode.toHexString()
+              : values.colorCode,
+        };
+
         if (editingColor) {
           // Edit existing color
-          const result = colorSystem.editColor(editingColor.id, values);
+          const result = colorSystem.editColor(editingColor.id, formValues);
           if (result.success) {
             message.success(result.message);
             refreshColors();
@@ -242,9 +135,9 @@ const ColorManagement = () => {
         } else {
           // Add new color
           const result = colorSystem.addColor(
-            values.name,
-            values.colorCode,
-            values.isActive
+            formValues.name,
+            formValues.colorCode,
+            formValues.isActive
           );
           if (result.success) {
             message.success(result.message);
@@ -290,37 +183,45 @@ const ColorManagement = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
+      align: "center",
     },
     {
       title: "Color Preview",
       dataIndex: "colorCode",
       key: "preview",
+      align: "center",
       render: (colorCode) => (
-        <div
-          style={{
-            backgroundColor: colorCode,
-            width: 40,
-            height: 40,
-            borderRadius: 4,
-            border: "1px solid #d9d9d9",
-          }}
-        />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <div
+            style={{
+              backgroundColor: colorCode,
+              width: 40,
+              height: 40,
+              borderRadius: 30,
+              border: "1px solid #d9d9d9",
+            }}
+          />
+        </div>
       ),
     },
+
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      align: "center",
     },
     {
       title: "Color Code",
       dataIndex: "colorCode",
       key: "colorCode",
+      align: "center",
     },
     {
       title: "Status",
       dataIndex: "isActive",
       key: "isActive",
+      align: "center",
       render: (isActive, record) => (
         <Switch
           checked={isActive}
@@ -331,6 +232,7 @@ const ColorManagement = () => {
     {
       title: "Actions",
       key: "actions",
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit">
@@ -366,19 +268,18 @@ const ColorManagement = () => {
     <div style={{ padding: 20 }}>
       <Card>
         <Title level={2}>Color Management System</Title>
-        <Divider />
 
-        <Space style={{ marginBottom: 16 }}>
+        <Space style={{ marginBottom: 16 }} className="flex justify-between">
           <Input
             placeholder="Search colors"
             value={searchText}
             onChange={(e) => handleSearch(e.target.value)}
-            style={{ width: 200 }}
+            style={{ width: 200,height:40 }}
             prefix={<SearchOutlined />}
             allowClear
           />
-          <Button type="primary" icon={<PlusOutlined />} onClick={showAddModal}>
-            Add Color
+          <Button type="primary" icon={<PlusOutlined />} onClick={showAddModal} style={{height: 40}}>
+            Add New Color
           </Button>
         </Space>
 
@@ -413,7 +314,17 @@ const ColorManagement = () => {
             label="Color Code"
             rules={[{ required: true, message: "Please select a color" }]}
           >
-            <ColorPicker />
+            <ColorPicker
+              showText
+              format="hex"
+              defaultValue={editingColor?.colorCode || "#1890ff"}
+              value={form.getFieldValue("colorCode")}
+              onChangeComplete={(color) => {
+                // Use the hexString directly - this is the crucial fix
+                form.setFieldsValue({ colorCode: color.toHexString() });
+                console.log("Color set to:", color.toHexString());
+              }}
+            />
           </Form.Item>
 
           <Form.Item name="isActive" label="Status" valuePropName="checked">

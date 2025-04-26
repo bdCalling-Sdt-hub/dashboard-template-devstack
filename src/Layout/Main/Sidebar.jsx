@@ -99,6 +99,11 @@ const Sidebar = () => {
       icon: renderIcon(SubscriptionManagement, "/color"),
       label: <Link to="/color">Color Management</Link>,
     },
+    {
+      key: "/size",
+      icon: renderIcon(SubscriptionManagement, "/size"),
+      label: <Link to="/size">Size Management</Link>,
+    },
     // {
     //   key: "/inventory",
     //   icon: renderIcon(InventoryManagement, "/inventory"),
