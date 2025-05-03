@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -24,6 +24,29 @@ ChartJS.register(
 const LineChart = () => {
   // State to manage the selected year, with 2025 as the default
   const [selectedYear, setSelectedYear] = useState(2025);
+  const [chartHeight, setChartHeight] = useState("200px");
+
+  // Effect to update chart height based on screen size
+  useEffect(() => {
+    const updateChartHeight = () => {
+      if (window.innerWidth < 768) {
+        setChartHeight("150px");
+      } else if (window.innerWidth < 1024) {
+        setChartHeight("200px");
+      } else {
+        setChartHeight("250px");
+      }
+    };
+
+    // Set initial height
+    updateChartHeight();
+
+    // Add event listener for window resize
+    window.addEventListener("resize", updateChartHeight);
+
+    // Clean up event listener
+    return () => window.removeEventListener("resize", updateChartHeight);
+  }, []);
 
   // Data for the line chart
   const allData = {
@@ -121,7 +144,7 @@ const LineChart = () => {
 
   // Function to handle the change of selected year
   const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
+    setSelectedYear(parseInt(event.target.value));
   };
 
   // Chart options and data based on selected year
@@ -164,6 +187,14 @@ const LineChart = () => {
         },
         ticks: {
           color: "#ffffff",
+          maxRotation: 45,
+          minRotation: 0,
+          autoSkip: true,
+          font: {
+            size: (context) => {
+              return window.innerWidth < 768 ? 8 : 12;
+            },
+          },
         },
       },
       y: {
@@ -173,9 +204,14 @@ const LineChart = () => {
         beginAtZero: false,
         ticks: {
           color: "#ffffff",
-          padding: 32,
+          padding: window.innerWidth < 768 ? 10 : 32,
           callback: function (value) {
             return `$${value.toLocaleString()}`;
+          },
+          font: {
+            size: (context) => {
+              return window.innerWidth < 768 ? 8 : 12;
+            },
           },
         },
       },
@@ -184,21 +220,25 @@ const LineChart = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-white">Total Revenue</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-4 gap-2 sm:gap-0">
+        <h2 className="text-lg sm:text-xl font-bold text-white">
+          Total Revenue
+        </h2>
         <select
           value={selectedYear}
           onChange={handleYearChange}
-          className="bg-primary text-white py-2 px-5 rounded-lg"
-          style={{outline:"none" , }}
+          className="bg-primary text-white py-1 sm:py-2 px-3 sm:px-5 rounded-lg"
+          style={{ outline: "none" }}
         >
-          
           <option value={2023}>2023</option>
           <option value={2024}>2024</option>
           <option value={2025}>2025</option>
         </select>
       </div>
-      <div style={{ width: "100%", height: "200px" }} className="text-white">
+      <div
+        style={{ width: "100%", height: chartHeight }}
+        className="text-white"
+      >
         <Line data={data} options={options} />
       </div>
     </div>

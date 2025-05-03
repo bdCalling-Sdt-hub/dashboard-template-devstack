@@ -13,12 +13,16 @@ const Main = () => {
   return (
     <div className="h-screen w-screen flex bg-baseBg overflow-hidden">
       {/* Sidebar */}
-      <div className="w-80 h-screen  bg-secondary ">
+      <div
+        className={`${
+          isCollapsed ? "w-20" : "w-80"
+        } md:w-80 h-screen bg-secondary transition-all duration-300`}
+      >
         <Sidebar />
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 h-screen ">
+      <div className="flex flex-col flex-1 h-screen">
         <Header toggleSidebar={toggleSidebar} />
         <div className="bg-[#F6F6F6] h-[calc(100vh-68px)] mt-3">
           {/* -68px */}

@@ -87,16 +87,21 @@ const Home = () => {
   };
 
   return (
-    <div className="">
-      <HomeCard />
-      <div className="   rounded-lg">
-      
-        <div className=" flex-1 w-full bg-gradient-to-r from-primary  to-secondary p-6 rounded-lg ">
+    <div className="p-2 md:p-4 space-y-4 md:space-y-6">
+      {/* Home Card */}
+      <div>
+        <HomeCard />
+      </div>
+
+      {/* Line Chart Section */}
+      <div className="w-full">
+        <div className="w-full bg-gradient-to-r from-primary to-secondary p-3 md:p-4 lg:p-6 rounded-lg">
           <LineChart />
         </div>
       </div>
 
-      <div className=" mt-6">
+      {/* Order Table */}
+      <div>
         <OrderTable />
         {/* <SalesLeaderBoard /> */}
       </div>

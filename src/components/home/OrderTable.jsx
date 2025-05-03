@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Table, Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import React from "react";
+import { Table } from "antd";
 
-// Sample Data with Unique Keys
+// Sample Data
 const dataSource = [
   {
     key: "1",
@@ -44,45 +43,79 @@ const dataSource = [
     amount: "$3200",
     status: "Pending",
   },
- 
 ];
 
-const columns = [
-  { title: "Order ID", dataIndex: "orderId", key: "orderId", align: "center" },
-  {
-    title: "Retailer Name",
-    dataIndex: "retailerName",
-    key: "retailerName",
-    align: "center",
-  },
-  {
-    title: "Sales Name",
-    dataIndex: "salesName",
-    key: "salesName",
-    align: "center",
-  },
-  { title: "Amount", dataIndex: "amount", key: "amount", align: "center" },
-  { title: "Status", dataIndex: "status", key: "status", align: "center" },
-];
+// Responsive columns configuration
+const getColumns = (screenWidth) => {
+  const baseColumns = [
+    {
+      title: "Order ID",
+      dataIndex: "orderId",
+      key: "orderId",
+      align: "center",
+    },
+    {
+      title: "Retailer Name",
+      dataIndex: "retailerName",
+      key: "retailerName",
+      align: "center",
+      responsive: ["md"],
+    },
+    {
+      title: "Sales Name",
+      dataIndex: "salesName",
+      key: "salesName",
+      align: "center",
+      responsive: ["lg"],
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      align: "center",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      render: (status) => (
+        <span
+          className={`px-2 py-1 rounded-full ${
+            status === "Completed"
+              ? "bg-green-200 text-green-800"
+              : "bg-yellow-200 text-yellow-800"
+          }`}
+        >
+          {status}
+        </span>
+      ),
+    },
+  ];
 
+  return baseColumns;
+};
 
 const OrderTable = () => {
+  const columns = getColumns();
 
   return (
-    <div>
-      <div className="flex justify-between mb-4 items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Last Sells Products</h1>
-       
+    <div className="w-full">
+      <div className="flex flex-col sm:flex-row justify-between mb-2 md:mb-4 items-start sm:items-center gap-2 sm:gap-0">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">
+          Last Sells Products
+        </h1>
       </div>
-      {/* Table Container with Gradient Background */}
-      <div className="p-6 rounded-lg bg-gradient-to-r from-primary to-secondary">
+      {/* Table container with horizontal scroll on small screens */}
+      <div className="overflow-x-auto bg-gradient-to-r from-primary to-secondary p-2 sm:p-4 md:p-6 rounded-lg">
         <Table
           dataSource={dataSource}
           columns={columns}
           bordered={false}
           pagination={false}
           size="small"
-          rowClassName="custom-table" 
+          scroll={{ x: "max-content" }}
+          className="responsive-table"
         />
       </div>
     </div>
