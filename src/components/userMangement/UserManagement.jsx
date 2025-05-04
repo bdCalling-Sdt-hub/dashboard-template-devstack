@@ -6,7 +6,6 @@ import {
   Space,
   Popconfirm,
   Tag,
-  Card,
   Typography,
   message,
   Modal,
@@ -19,6 +18,7 @@ import {
   UnlockOutlined,
   ExclamationCircleOutlined,
   FilterOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 
 const { Title } = Typography;
@@ -106,127 +106,139 @@ const UserManagement = () => {
     );
   };
 
-  const columns = [
-    {
-      title: "Serial",
-      dataIndex: "id",
-      key: "id",
-      width: 80,
-      align: "center",
-      render: (text, record, index) => {
-        return (pagination.current - 1) * pagination.pageSize + index + 1;
+  // Define columns based on screen size
+  const getColumns = () => {
+    return [
+      {
+        title: "Serial",
+        dataIndex: "id",
+        key: "id",
+        width: 80,
+        align: "center",
+        render: (text, record, index) => {
+          return (pagination.current - 1) * pagination.pageSize + index + 1;
+        },
       },
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      align: "center",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      align: "center",
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-      key: "phone",
-      align: "center",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-      align: "center",
-      ellipsis: true,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-      render: (status) => {
-        let color = "blue";
-        if (status === "admin") color = "red";
-        else if (status === "vendor") color = "green";
-        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      {
+        title: "Name",
+        dataIndex: "name",
+        key: "name",
+        align: "center",
       },
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      align: "center",
-      render: (_, record) => (
-        <Space>
-          <Button
-            type={record.isBlocked ? "dashed" : "primary"}
-            icon={record.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
-            onClick={() => handleToggleBlock(record.id, record.isBlocked)}
-          >
-            {record.isBlocked ? "Unblock" : "Block"}
-          </Button>
-          <Popconfirm
-            title="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button danger icon={<DeleteOutlined />}>
-              Delete
+      {
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+        align: "center",
+        responsive: ["md"],
+      },
+      {
+        title: "Phone",
+        dataIndex: "phone",
+        key: "phone",
+        align: "center",
+        responsive: ["lg"],
+      },
+      {
+        title: "Address",
+        dataIndex: "address",
+        key: "address",
+        align: "center",
+        ellipsis: true,
+        responsive: ["lg"],
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        align: "center",
+        render: (status) => {
+          let color = "blue";
+          if (status === "admin") color = "red";
+          else if (status === "vendor") color = "green";
+          return <Tag color={color}>{status.toUpperCase()}</Tag>;
+        },
+      },
+      {
+        title: "Actions",
+        key: "actions",
+        align: "center",
+        render: (_, record) => (
+          <Space wrap size="small">
+            <Button
+              type={record.isBlocked ? "dashed" : "primary"}
+              size="middle"
+              icon={record.isBlocked ? <UnlockOutlined /> : <LockOutlined />}
+              onClick={() => handleToggleBlock(record.id, record.isBlocked)}
+            >
+              {record.isBlocked ? "Unblock" : "Block"}
             </Button>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+            <Popconfirm
+              title="Delete this user?"
+              onConfirm={() => handleDelete(record.id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button danger size="middle" icon={<DeleteOutlined />}>
+                Delete
+              </Button>
+            </Popconfirm>
+          </Space>
+        ),
+      },
+    ];
+  };
 
   return (
-    <div>
-      
-        <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
-          <Title level={4} className="m-0">
-            User Management
-          </Title>
+    <div className="w-full px-2 md:px-4 py-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+        <Title level={4} className="m-0 text-lg md:text-xl">
+          User Management
+        </Title>
 
-          <Space wrap>
-            <Input
-              placeholder="Search by name or email"
-              prefix={<SearchOutlined />}
-              style={{ width: 250 , height:40}}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              allowClear
-            />
+        <div className="w-full md:w-auto flex flex-col sm:flex-row gap-2">
+          <Input
+            placeholder="Search by name or email"
+            prefix={<SearchOutlined />}
+            className="w-full sm:w-48 md:w-64"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+          />
 
-            <Select
-              placeholder="Filter by status"
-              value={statusFilter}
-              onChange={(value) => setStatusFilter(value)}
-              style={{ width: 150, height:40 }}
-              suffixIcon={<FilterOutlined />}
-            >
-              <Option value="all">All Users</Option>
-              <Option value="user">Users</Option>
-              <Option value="vendor">Vendors</Option>
-              <Option value="admin">Admins</Option>
-            </Select>
-          </Space>
+          <Select
+            placeholder="Filter by status"
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value)}
+            className="w-full sm:w-36"
+            suffixIcon={<FilterOutlined />}
+          >
+            <Option value="all">All Users</Option>
+            <Option value="user">Users</Option>
+            <Option value="vendor">Vendors</Option>
+            <Option value="admin">Admins</Option>
+          </Select>
         </div>
+      </div>
 
-        <div className="px-6 pt-6 rounded-lg bg-gradient-to-r from-primary to-secondary">
+      <div className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 p-1">
+        <div className="bg-white rounded-lg overflow-hidden">
           <Table
-            columns={columns}
+            columns={getColumns()}
             dataSource={getProcessedUsers()}
             rowKey="id"
-            pagination={pagination}
+            pagination={{
+              ...pagination,
+              size: "default",
+              showSizeChanger: true,
+            }}
             onChange={handleTableChange}
-          loading={loading}
-          size="small"
+            loading={loading}
+            size="middle"
+            scroll={{ x: "max-content" }}
           />
         </div>
-  
+      </div>
     </div>
   );
 };

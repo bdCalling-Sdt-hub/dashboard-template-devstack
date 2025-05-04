@@ -4,32 +4,34 @@ const TopSalesRepCard = () => {
   // Data for cards with image paths instead of icons
   const cardData = [
     {
-      image: "https://i.ibb.co.com/8gh3mqPR/Ellipse-48-1.jpg", // Replace with your actual image URL
+      image: "https://i.ibb.co/8gh3mqPR/Ellipse-48-1.jpg", // Replace with your actual image URL
       value: "$15000",
       label: "Jashica Tasnim",
     },
     {
-      image: "https://i.ibb.co.com/8gh3mqPR/Ellipse-48-1.jpg", // Replace with your actual image URL
+      image: "https://i.ibb.co/8gh3mqPR/Ellipse-48-1.jpg", // Replace with your actual image URL
       value: "$10562",
       label: "Tanvir Ahmed",
     },
     {
-      image: "https://i.ibb.co.com/8gh3mqPR/Ellipse-48-1.jpg", // Replace with your actual image URL
+      image: "https://i.ibb.co/8gh3mqPR/Ellipse-48-1.jpg", // Replace with your actual image URL
       value: "$5000",
       label: "Pronab Kumar",
     },
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-6 h-[120px] mb-9">
-      {cardData.map((data, index) => (
-        <SalesRepsCard
-          key={index}
-          image={data.image}
-          value={data.value}
-          label={data.label}
-        />
-      ))}
+    <div className="mb-9">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {cardData.map((data, index) => (
+          <SalesRepsCard
+            key={index}
+            image={data.image}
+            value={data.value}
+            label={data.label}
+          />
+        ))}
+      </div>
     </div>
   );
 };

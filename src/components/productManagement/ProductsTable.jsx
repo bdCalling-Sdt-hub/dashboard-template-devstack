@@ -412,7 +412,7 @@ const ProductsTable = ({
           loading={loading}
           pagination={{ pageSize: 10 }}
           size="small"
-          // rowClassName={rowClassName}
+          scroll={{ x: "max-content" }}
         />
       </div>
     </div>

@@ -154,7 +154,6 @@ const RetailerManageTable = () => {
       zipCode: user.zipCode,
       totalOrder: user.totalOrder,
       totalSales: user.totalSales,
-      
     });
     setIsModalOpen(true);
   };
@@ -358,10 +357,7 @@ const RetailerManageTable = () => {
                   { required: true, message: "Please enter shipping address" },
                 ]}
               >
-                <Input
-                  placeholder="Shipping Address"
-                  className="p-2 rounded"
-                />
+                <Input placeholder="Shipping Address" className="p-2 rounded" />
               </Form.Item>
             </Col>
 
